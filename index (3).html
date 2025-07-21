@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AumVerse - Aume Designs</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&family=Montserrat:wght@400;700&family=Open+Sans:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet"/>
+  <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+  <style>
+    html {
+      scroll-behavior: smooth; /* Smooth scrolling for anchor links */
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Open Sans', 'Roboto', sans-serif; /* Body Text font */
+      background-color: #1E132F; /* Dark Purple (Main Background) */
+      color: #F5F5F5; /* Light Gray (Text) */
+      background-attachment: fixed; /* Ensures gradient stays in place on scroll */
+      transition: background-color 0.5s ease, color 0.5s ease; /* Global transition for body */
+    }
+
+    header {
+      text-align: center;
+      background-color: #1E132F; /* Dark Purple (Main Background) */
+      padding: 30px 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    header img {
+      width: 110px;
+      margin-bottom: 10px;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+      position: static;
+      top: auto;
+      left: auto;
+    }
+
+    header h1 {
+      color: #C6A8F6; /* Updated Headline Text Color */
+      margin: 10px 0;
+      font-size: 42px;
+      padding-top: 20px;
+      font-family: 'Poppins', 'Montserrat', sans-serif; /* Headings font */
+    }
+
+    header p {
+      font-size: 20px;
+      color: #C6A8F6; /* Updated Subtext Color */
+      margin-top: 10px;
+    }
+
+    .header-buttons {
+      margin-top: 30px;
+      display: flex;
+      justify-content: center;
+      gap: 15px; /* Reduced space between buttons */
+      flex-wrap: wrap; /* Allows buttons to wrap on smaller screens */
+    }
+
+    .cta-button {
+      display: inline-block;
+      text-decoration: none;
+      color: #F5F5F5; /* Light Gray (Text) */
+      background-color: #8B5FBF; /* Accent Purple (Buttons, Borders) */
+      padding: 12px 25px; /* Reduced button size */
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 16px; /* Reduced font size */
+      transition: background-color 0.3s ease;
+    }
+
+    .cta-button:hover {
+      background-color: #6A0DAD; /* Primary Purple (Buttons & Titles) on hover */
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 40px auto;
+      padding: 20px;
+    }
+
+    .card {
+      background-color: #1E132F; /* Dark Purple (Main Background) */
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(106, 13, 173, 0.15); /* Shadow from Primary Purple */
+      margin-bottom: 30px;
+      transition: transform 0.3s ease;
+      border: 1px solid #A774C7; /* Subtle Accent Purple (Borders, Footer) */
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+    }
+
+    .card h2 {
+      color: #BB86FC; /* Section title pop-out */
+      margin-bottom: 15px;
+      font-size: 28px;
+      font-family: 'Poppins', 'Montserrat', sans-serif; /* Headings font */
+    }
+
+    .card p {
+      font-size: 16px;
+      line-height: 1.6;
+      color: #F5F5F5; /* Light Gray (Text) */
+    }
+
+    .designer-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .designer-card img {
+      width: 120px; /* Smaller square size */
+      height: 120px; /* Smaller square size */
+      object-fit: cover;
+      margin-bottom: 20px;
+      border-radius: 20%; /* Slightly rounded corners for the square */
+      border: 4px solid #8B5FBF; /* Accent Purple (Buttons, Borders) */
+      outline: 4px solid transparent; /* Placeholder for outer circle effect */
+      outline-offset: 8px; /* Offset for the outer circle */
+      position: relative;
+    }
+
+    /* Pseudo-element for the circular border effect around the square */
+    .designer-card img::after {
+        content: '';
+        position: absolute;
+        top: -12px; /* Adjust to create circular border around the square */
+        left: -12px;
+        width: calc(100% + 24px);
+        height: calc(100% + 24px);
+        border: 2px solid #A774C7; /* Subtle circular border color */
+        border-radius: 50%; /* Make it a circle */
+        box-sizing: border-box;
+        pointer-events: none; /* Allow clicks to pass through */
+    }
+
+
+    .designer-card h3 {
+      color: #F5F5F5; /* Light Gray (Text) */
+      margin-bottom: 5px;
+      font-size: 24px;
+      font-family: 'Poppins', 'Montserrat', sans-serif; /* Headings font */
+    }
+
+    .designer-card h4 {
+      color: #D3D3D3; /* Subheading text / muted text */
+      margin-top: 0;
+      font-size: 18px;
+    }
+
+    .designer-card .bio {
+      font-size: 16px;
+      line-height: 1.6;
+      color: #F5F5F5; /* Light Gray (Text) */
+      max-width: 700px;
+      margin-bottom: 25px;
+    }
+
+    .designer-card .social-buttons {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .designer-card .social-buttons a {
+      display: inline-block;
+      text-decoration: none;
+      color: #F5F5F5; /* Light Gray (Text) */
+      background-color: #8B5FBF; /* Accent Purple (Buttons, Borders) */
+      padding: 12px 25px;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 16px;
+      transition: background-color 0.3s ease;
+    }
+
+    .designer-card .social-buttons a:hover {
+      background-color: #6A0DAD; /* Primary Purple (Buttons & Titles) on hover */
+    }
+
+    /* Services Section Styles */
+    .services-section {
+      background-color: #1E132F; /* Dark Purple (Main Background) */
+      padding: 60px 20px;
+      text-align: center;
+      margin-bottom: 40px; /* Added margin for separation */
+    }
+
+    .services-section h2 {
+      color: #BB86FC; /* Section title pop-out */
+      font-size: 2rem;
+      margin-bottom: 40px;
+      font-family: 'Poppins', 'Montserrat', sans-serif; /* Headings font */
+    }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 30px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .service-card {
+      background-color: #1E132F; /* Dark Purple (Main Background) */
+      padding: 25px 20px;
+      border-radius: 16px;
+      text-align: center;
+      transition: transform 0.6s ease-out, opacity 0.6s ease-out; /* Slower transition */
+      border: 1px solid #A774C7; /* Subtle Accent Purple (Borders, Footer) */
+      opacity: 0; /* Hidden by default for animation */
+      transform: translateY(40px); /* More pronounced slide-up effect */
+    }
+
+    .service-card.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .service-card:hover {
+      transform: translateY(-8px);
+    }
+
+    .service-card .icon {
+      width: 60px;
+      height: 60px;
+      background-color: rgba(187, 134, 252, 0.1); /* Tint from Section title pop-out */
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0 auto 20px auto;
+    }
+
+    .service-card .icon svg {
+        color: #BB86FC; /* Section title pop-out */
+    }
+
+    .service-card h3 {
+      font-size: 1.3rem;
+      color: #F5F5F5; /* Light Gray (Text) */
+      margin-bottom: 10px;
+      font-family: 'Poppins', 'Montserrat', sans-serif; /* Headings font */
+    }
+
+    .service-card p {
+      color: #D3D3D3; /* Subheading text / muted text */
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    @media (min-width: 768px) {
+      .services-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    /* Added for 3-column layout on larger screens to accommodate new service */
+    @media (min-width: 1024px) {
+        .services-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
+    footer {
+      text-align: center;
+      padding: 25px 10px;
+      font-size: 14px;
+      background-color: #1E132F; /* Dark Purple (Main Background) */
+      color: #A774C7; /* Subtle Accent Purple (Borders, Footer) */
+      border-top: 1px solid #A774C7; /* Subtle Accent Purple (Borders, Footer) */
+    }
+
+    /* Removed footer .footer-links a and .social-icons specific styles to remove the links */
+
+    footer p {
+      margin-top: 10px; /* Adjust spacing for new email line */
+      color: #F5F5F5; /* Ensure copyright text is visible */
+    }
+
+    footer a {
+      color: #8B5FBF; /* Accent Purple for email link */
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+
+    footer a:hover {
+      color: #6A0DAD; /* Primary Purple on hover */
+    }
+
+    .let-s-get-started-button-container {
+      text-align: center;
+      padding: 40px 20px;
+      background-color: #1E132F; /* Match main background */
+    }
+
+    .let-s-get-started-button {
+      display: inline-block;
+      text-decoration: none;
+      color: #F5F5F5; /* Light Gray (Text) */
+      background-color: #6A0DAD; /* Primary Purple for strong visual */
+      padding: 18px 35px;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 20px;
+      transition: background-color 0.3s ease;
+    }
+
+    .let-s-get-started-button:hover {
+      background-color: #8B5FBF; /* Accent Purple on hover */
+    }
+
+    header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(45deg, #1E132F, #6A0DAD); /* Dark Purple (Main Background) to Primary Purple */
+      animation: gradientBG 15s ease infinite;
+      opacity: 0.3;
+      z-index: -1;
+    }
+
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    /* AOS specific section transitions */
+    section {
+      transition: transform 0.6s ease, opacity 0.6s ease; /* Ensure sections animate correctly with AOS */
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <img src="https://i.ibb.co/ZRjTbY2L/file-00000000650861f9bad2ae3237c73eb5.png" alt="AumVerse Logo" />
+    <h1 data-aos="fade-up">We design meaningful brand identities and powerful logos.</h1>
+    <p data-aos="fade-up" data-aos-delay="200">Bringing your vision to life through distinctive, memorable, and impactful branding solutions that leave a lasting impression.</p>
+    <div class="header-buttons">
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLSdqVf2SC38z-0tUqZqamcJumAq4GlMx8sBiQTUKe63I934qdA/viewform?usp=header" class="cta-button" data-aos="zoom-in" data-aos-delay="400">Schedule a Call</a>
+      <a href="#designer-showcase" class="cta-button" data-aos="zoom-in" data-aos-delay="500">Meet Our Designer</a>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <div class="card" data-aos="fade-right">
+      <h2>About Aume Designs</h2>
+      <p>
+        Aume Designs, the creative wing of AUME, specializes in crafting compelling visual identities and dynamic motion storytelling. We bring ideas to life with originality and precision, whether it's through unique logo creation, comprehensive brand identity development, or impactful product packaging design. Our mission is to transform concepts into visually stunning realities that resonate with your audience and elevate your brand presence.
+      </p>
+    </div>
+
+    <div class="card designer-card" id="designer-showcase" data-aos="fade-left">
+      <img src="https://i.ibb.co/fYPpCxr6/IMG-20250721-WA0026.jpg" alt="Sargam Raao Profile Picture" data-aos="flip-left" data-aos-delay="200"/>
+      <h3>Sargam Raao</h3>
+      <h4>Lead Graphic & Motion Designer</h4>
+      <p class="bio">
+        Sargam specializes in crafting unique logos, building strong brand identities, and designing impactful packaging that resonates with audiences. Her creative vision blends functionality with aesthetics, bringing brands to life with clarity and emotion.
+      </p>
+      <div class="social-buttons">
+        <a href="https://www.behance.net/sargamraao1" target="_blank">See Her Work</a>
+        <a href="https://www.linkedin.com/in/sargam-raao-465565368?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" target="_blank">Connect on LinkedIn</a>
+      </div>
+    </div>
+
+    <section class="services-section">
+      <h2 data-aos="fade-up">Our Services</h2>
+      <div class="services-grid">
+        <div class="service-card" data-aos="fade-up" data-aos-delay="100">
+          <div class="icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#BB86FC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-pen-tool"><path d="M12 19l7-7 3 3-7 7-3-3z"></path><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l1.5-7.5z"></path><path d="M2 2l7.5 7.5"></path></svg>
+          </div>
+          <h3>Logo Designing</h3>
+          <p>Transform your brand's vision into a captivating masterpiece that speaks volumes with just a glance. Let your logo do the talking, while you do the business!</p>
+        </div>
+        <div class="service-card" data-aos="fade-up" data-aos-delay="200">
+          <div class="icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#BB86FC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-target"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
+          </div>
+          <h3>Branding</h3>
+          <p>Unleash the magic of storytelling as we craft a brand experience that sparks love at first sight. Stand out, stay memorable, and conquer your audience!</p>
+        </div>
+        <div class="service-card" data-aos="fade-up" data-aos-delay="300">
+          <div class="icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#BB86FC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-package"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+          </div>
+          <h3>Packaging Design</h3>
+          <p>Unwrap success with sensational packaging designs that make your products pop! Leave a lasting impression and make your competition green with envy.</p>
+        </div>
+        <div class="service-card" data-aos="fade-up" data-aos-delay="400">
+          <div class="icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#BB86FC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-monitor"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+          </div>
+          <h3>Graphic Design</h3>
+          <p>From pixel to perfection, our design wizards will turn your ideas into visual wonders. Wow the world with eye-catching graphics that steal the spotlight!</p>
+        </div>
+        <div class="service-card" data-aos="fade-up" data-aos-delay="500">
+          <div class="icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#BB86FC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-layout"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+          </div>
+          <h3>UI/UX Design</h3>
+          <p>Crafting intuitive and engaging digital experiences, we design user interfaces that are both beautiful and highly functional, ensuring a seamless journey for your audience.</p>
+        </div>
+    </section>
+
+  </div>
+
+  <div class="let-s-get-started-button-container" data-aos="zoom-in" data-aos-delay="200">
+    <a href="https://docs.google.com/forms/d/e/1FAIpQLSdqVf2SC38z-0tUqZqamcJumAq4GlMx8sBiQTUKe63I934qdA/viewform?usp=header" class="let-s-get-started-button">Let's Get Started</a>
+  </div>
+
+  <footer id="contact">
+    <p>© 2025 AumVerse. All rights reserved.</p>
+    <p>Email: <a href="mailto:infoaume.in@gmail.com">infoaume.in@gmail.com</a></p>
+  </footer>
+
+  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+  <script>
+    AOS.init({
+      duration: 1000, // animation duration in ms
+      once: true,     // only animate once
+    });
+
+    // Original Intersection Observer for service cards (can coexist with AOS, or remove if AOS handles all desired animations)
+    document.addEventListener('DOMContentLoaded', () => {
+      const serviceCards = document.querySelectorAll('.service-card');
+
+      const observerOptions = {
+        root: null, // viewport as root
+        rootMargin: '0px',
+        threshold: 0.2 // 20% of the item must be visible
+      };
+
+      const observer = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            // If AOS is used extensively, you might remove unobserve here to let AOS manage it,
+            // or keep it if this specific animation is custom.
+            // For now, it stays to ensure this specific effect.
+            // observer.unobserve(entry.target);
+          }
+        });
+      }, observerOptions);
+
+      serviceCards.forEach(card => {
+        observer.observe(card);
+      });
+    });
+  </script>
+
+</body>
+</html>
