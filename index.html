@@ -1,363 +1,298 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>AumVerse - Aume Designs</title>
+
+  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&family=Montserrat:wght@400;700&family=Open+Sans:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet"/>
-  <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+
+  <!-- AOS -->
+  <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet"/>
+
+  <!-- VanillaTilt -->
+  <script defer src="https://cdn.jsdelivr.net/npm/vanilla-tilt@1.8.1/dist/vanilla-tilt.min.js"></script>
+
+  <!-- GSAP + ScrollTrigger -->
+  <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+
   <style>
-    html {
-      scroll-behavior: smooth; /* Smooth scrolling for anchor links */
+    :root{
+      --bg:#000;
+      --bg-2:#0A0A0A;
+      --text:#FFF;
+      --muted:#B5B5B5;
+      --border:#2A2A2A;
+      --border-2:#333;
+      --btn-bg:#000;
+      --btn-text:#FFF;
+      --btn-hover-bg:#FFF;
+      --btn-hover-text:#000;
+      --shadow-1:0 10px 25px rgba(0,0,0,0.45);
+      --shadow-2:0 20px 50px rgba(0,0,0,0.65);
     }
 
-    body {
-      margin: 0;
-      font-family: 'Open Sans', 'Roboto', sans-serif; /* Body Text font */
-      background-color: #1E132F; /* Dark Purple (Main Background) */
-      color: #F5F5F5; /* Light Gray (Text) */
-      background-attachment: fixed; /* Ensures gradient stays in place on scroll */
-      transition: background-color 0.5s ease, color 0.5s ease; /* Global transition for body */
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:'Open Sans','Roboto',sans-serif;
+      background-color:var(--bg);
+      color:var(--text);
+      background-attachment:fixed;
+      transition:background-color .5s ease,color .5s ease;
     }
 
-    header {
-      text-align: center;
-      background-color: #1E132F; /* Dark Purple (Main Background) */
-      padding: 30px 20px;
-      position: relative;
-      overflow: hidden;
+    /* ====== INTRO OVERLAY (2.6s) ====== */
+    body.intro-lock{ overflow:hidden } /* prevent scroll during intro */
+
+    .intro-overlay{
+      position:fixed; inset:0; background:#000;
+      display:grid; place-items:center;
+      z-index:9999;
+      opacity:1; visibility:visible;
+      transition:opacity .6s ease, visibility .6s ease;
+    }
+    .intro-overlay.hidden{ opacity:0; visibility:hidden; pointer-events:none }
+
+    .intro-logo-wrap{
+      display:block; width:min(200px, 44vw); line-height:0;
+    }
+    .intro-logo-wrap img{
+      width:100%; height:auto; display:block; filter:none; background:transparent;
+      animation:spinLogo 2.1s ease-in-out forwards;
+    }
+    @keyframes spinLogo{
+      0%{ transform:rotate(0deg); opacity:1 }
+      90%{ transform:rotate(350deg); opacity:1 }
+      100%{ transform:rotate(360deg); opacity:1 }
+    }
+    /* Reduced motion: no spin, quick fade */
+    @media (prefers-reduced-motion:reduce){
+      .intro-logo-wrap img{ animation:none }
     }
 
-    header img {
-      width: 110px;
-      margin-bottom: 10px;
-      display: block;
-      margin-left: auto;
-      margin-right: auto;
-      position: static;
-      top: auto;
-      left: auto;
+    /* ====== HEADER ====== */
+    header{
+      text-align:center;
+      background:var(--bg);
+      /* tighter, more balanced spacing as requested */
+      padding:36px 20px 40px;
+      position:relative;
+      border-bottom:1px solid var(--border);
     }
 
-    header h1 {
-      color: #C6A8F6; /* Updated Headline Text Color */
-      margin: 10px 0;
-      font-size: 42px;
-      padding-top: 20px;
-      font-family: 'Poppins', 'Montserrat', sans-serif; /* Headings font */
+    .logo-block{
+      display:block;
+      width:min(200px, 45vw);  /* balanced size */
+      margin:0 auto 8px;       /* smaller gap under logo */
+      line-height:0;
+    }
+    .logo-block img{
+      width:100%; height:auto; display:block; background:transparent; filter:none;
     }
 
-    header p {
-      font-size: 20px;
-      color: #C6A8F6; /* Updated Subtext Color */
-      margin-top: 10px;
+    /* Headline and subtext with controlled spacing */
+    header h1{
+      color:#FFF;
+      margin:12px auto 10px;    /* minute distance above & below */
+      font-size:44px;
+      line-height:1.16;
+      max-width:1200px;
+      font-family:'Poppins','Montserrat',sans-serif;
+      letter-spacing:.2px;
+    }
+    header p{
+      font-size:20px;
+      color:var(--muted);
+      margin:16px auto 0;       /* clearly separated from headline */
+      max-width:1000px;         /* prevents wrap cut on small canvases */
+      line-height:1.7;
+      padding:0 12px;           /* keep text from touching edges in editors */
     }
 
-    .header-buttons {
-      margin-top: 30px;
-      display: flex;
-      justify-content: center;
-      gap: 15px; /* Reduced space between buttons */
-      flex-wrap: wrap; /* Allows buttons to wrap on smaller screens */
+    /* Header CTAs hidden (CTA appears at end) */
+    .header-buttons{ display:none }
+
+    .container{ max-width:1000px; margin:40px auto; padding:20px }
+
+    /* Cards */
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,0)) , var(--bg-2);
+      padding:30px; border-radius:14px;
+      box-shadow:var(--shadow-1);
+      margin-bottom:30px;
+      transition:transform .3s ease, box-shadow .3s ease;
+      border:1px solid var(--border);
+      transform-style:preserve-3d;
+      backdrop-filter:saturate(110%) contrast(105%);
+    }
+    .card:hover{ transform:translateY(-5px); box-shadow:var(--shadow-2) }
+    .card h2{
+      color:#FFF; margin-bottom:15px; font-size:28px;
+      font-family:'Poppins','Montserrat',sans-serif;
+    }
+    .card p{ font-size:16px; line-height:1.7; color:#EFEFEF }
+
+    /* Designer card */
+    .designer-card{ display:flex; flex-direction:column; align-items:center; text-align:center }
+    .designer-card img{
+      width:124px; height:124px; object-fit:cover; margin-bottom:18px;
+      border-radius:20%;
+      border:4px solid #fff;
+      outline:4px solid transparent; outline-offset:8px; position:relative;
+      box-shadow:0 6px 18px rgba(0,0,0,.5);
+    }
+    .designer-card h3{ color:#FFF; margin-bottom:5px; font-size:24px; font-family:'Poppins','Montserrat',sans-serif }
+    .designer-card h4{ color:var(--muted); margin-top:0; font-size:18px }
+    .designer-card .bio{ font-size:16px; line-height:1.7; color:#EFEFEF; max-width:700px; margin-bottom:22px }
+    .designer-card .social-buttons{ display:flex; gap:20px; flex-wrap:wrap; justify-content:center }
+    .designer-card .social-buttons a{ background:var(--btn-bg); color:var(--btn-text); border:1px solid var(--border-2); padding:12px 25px; border-radius:6px; font-weight:bold; font-size:16px; transition:all .25s ease }
+    .designer-card .social-buttons a:hover{ background:var(--btn-hover-bg); color:var(--btn-hover-text); transform:translateY(-2px) }
+
+    /* Services */
+    .services-section{
+      background:var(--bg);
+      padding:56px 20px; text-align:center; margin-bottom:40px;
+      border-top:1px solid var(--border); border-bottom:1px solid var(--border);
+    }
+    .services-section h2{
+      color:#FFF; font-size:2rem; margin-bottom:36px; font-family:'Poppins','Montserrat',sans-serif
     }
 
-    .cta-button {
-      display: inline-block;
-      text-decoration: none;
-      color: #F5F5F5; /* Light Gray (Text) */
-      background-color: #8B5FBF; /* Accent Purple (Buttons, Borders) */
-      padding: 12px 25px; /* Reduced button size */
-      border-radius: 8px;
-      font-weight: bold;
-      font-size: 16px; /* Reduced font size */
-      transition: background-color 0.3s ease;
+    .services-grid{
+      --gap:28px;
+      display:grid;
+      grid-template-columns:1fr;
+      gap:var(--gap);
+      max-width:1100px;
+      margin:0 auto;
+      perspective:1200px;
+    }
+    @media (min-width:768px){
+      .services-grid{ grid-template-columns:repeat(2,1fr) }
+    }
+    @media (min-width:1100px){
+      .services-grid{ grid-template-columns:repeat(3,1fr) }
     }
 
-    .cta-button:hover {
-      background-color: #6A0DAD; /* Primary Purple (Buttons & Titles) on hover */
+    .service-card{
+      position:relative;
+      background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,0)) , var(--bg-2);
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:28px 22px 24px;
+      text-align:center;
+      transform-style:preserve-3d;
+      transition:transform .5s cubic-bezier(.2,.8,.2,1), box-shadow .35s ease, border-color .35s ease;
+      box-shadow:0 8px 24px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.03);
+      overflow:hidden;
+      will-change:transform;
+      opacity:0; transform:translateY(40px) scale(.98);
+    }
+    .service-card.is-visible{ opacity:1; transform:translateY(0) scale(1) }
+    .service-card:hover{
+      transform:translateY(-8px) rotateX(2deg) rotateY(-2deg);
+      box-shadow:0 20px 60px rgba(0,0,0,.6);
+      border-color:#3a3a3a;
+    }
+    .service-card::before{
+      content:'';
+      position:absolute; inset:-120% -120% auto -120%;
+      height:260%;
+      background:conic-gradient(from 180deg, transparent 0 30%, rgba(255,255,255,.08) 40% 60%, transparent 70% 100%);
+      opacity:.25;
+      animation:shine 8s linear infinite;
+      pointer-events:none;
+    }
+    @keyframes shine{ 0%{ transform:translateY(0) } 100%{ transform:translateY(-20%) } }
+
+    .service-card .icon{
+      width:64px; height:64px; margin:0 auto 18px auto;
+      display:flex; align-items:center; justify-content:center;
+      border-radius:14px;
+      background:rgba(255,255,255,.06);
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);
+      transform:translateZ(24px);
+      animation:floatIcon 6s ease-in-out infinite;
+    }
+    .service-card .icon svg{ color:#FFF; stroke:#FFF }
+    @keyframes floatIcon{ 0%,100%{ transform:translateZ(24px) translateY(0) } 50%{ transform:translateZ(24px) translateY(-6px) } }
+
+    .service-card h3{
+      font-size:1.25rem; color:#FFF; margin:8px 0 10px 0;
+      font-family:'Poppins','Montserrat',sans-serif;
+      transform:translateZ(18px);
+    }
+    .service-card p{
+      color:var(--muted); font-size:0.98rem; line-height:1.7;
+      transform:translateZ(12px);
     }
 
-    .container {
-      max-width: 1000px;
-      margin: 40px auto;
-      padding: 20px;
+    /* CTA at the END */
+    .cta-end{
+      padding:44px 20px 56px;
+      text-align:center;
+      border-top:1px solid var(--border);
+      background:var(--bg);
+    }
+    .let-s-get-started-button{
+      display:inline-block; text-decoration:none;
+      color:var(--btn-text); background:var(--btn-bg);
+      padding:16px 34px; border-radius:10px; font-weight:700; font-size:18px;
+      border:1px solid var(--border-2);
+      transition:transform .2s ease, color .25s ease, background-color .25s ease, box-shadow .25s ease;
+      background-image:linear-gradient(currentColor, currentColor);
+      background-size:0 2px; background-position:0 100%; background-repeat:no-repeat;
+    }
+    .let-s-get-started-button:hover, .let-s-get-started-button:focus-visible{
+      background:var(--btn-hover-bg); color:var(--btn-hover-text);
+      background-size:100% 2px; outline:none; transform:translateY(-2px) scale(1.03);
+      box-shadow:0 12px 26px rgba(255,255,255,0.06);
     }
 
-    .card {
-      background-color: #1E132F; /* Dark Purple (Main Background) */
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 0 20px rgba(106, 13, 173, 0.15); /* Shadow from Primary Purple */
-      margin-bottom: 30px;
-      transition: transform 0.3s ease;
-      border: 1px solid #A774C7; /* Subtle Accent Purple (Borders, Footer) */
+    /* Footer */
+    footer{
+      text-align:center; padding:24px 10px; font-size:14px; background:var(--bg); color:#CFCFCF;
+      border-top:1px solid var(--border);
     }
+    footer p{ margin-top:10px; color:#EDEDED }
+    footer a{ color:#FFF; text-decoration:none; transition:color .3s ease, text-decoration-color .3s ease; border-bottom:1px solid transparent }
+    footer a:hover{ color:#000; background:#FFF; padding:2px 4px; border-radius:4px }
 
-    .card:hover {
-      transform: translateY(-5px);
-    }
+    section{ transition:transform .6s ease, opacity .6s ease }
 
-    .card h2 {
-      color: #BB86FC; /* Section title pop-out */
-      margin-bottom: 15px;
-      font-size: 28px;
-      font-family: 'Poppins', 'Montserrat', sans-serif; /* Headings font */
-    }
-
-    .card p {
-      font-size: 16px;
-      line-height: 1.6;
-      color: #F5F5F5; /* Light Gray (Text) */
-    }
-
-    .designer-card {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-    }
-
-    .designer-card img {
-      width: 120px; /* Smaller square size */
-      height: 120px; /* Smaller square size */
-      object-fit: cover;
-      margin-bottom: 20px;
-      border-radius: 20%; /* Slightly rounded corners for the square */
-      border: 4px solid #8B5FBF; /* Accent Purple (Buttons, Borders) */
-      outline: 4px solid transparent; /* Placeholder for outer circle effect */
-      outline-offset: 8px; /* Offset for the outer circle */
-      position: relative;
-    }
-
-    /* Pseudo-element for the circular border effect around the square */
-    .designer-card img::after {
-        content: '';
-        position: absolute;
-        top: -12px; /* Adjust to create circular border around the square */
-        left: -12px;
-        width: calc(100% + 24px);
-        height: calc(100% + 24px);
-        border: 2px solid #A774C7; /* Subtle circular border color */
-        border-radius: 50%; /* Make it a circle */
-        box-sizing: border-box;
-        pointer-events: none; /* Allow clicks to pass through */
-    }
-
-
-    .designer-card h3 {
-      color: #F5F5F5; /* Light Gray (Text) */
-      margin-bottom: 5px;
-      font-size: 24px;
-      font-family: 'Poppins', 'Montserrat', sans-serif; /* Headings font */
-    }
-
-    .designer-card h4 {
-      color: #D3D3D3; /* Subheading text / muted text */
-      margin-top: 0;
-      font-size: 18px;
-    }
-
-    .designer-card .bio {
-      font-size: 16px;
-      line-height: 1.6;
-      color: #F5F5F5; /* Light Gray (Text) */
-      max-width: 700px;
-      margin-bottom: 25px;
-    }
-
-    .designer-card .social-buttons {
-      display: flex;
-      gap: 20px;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-
-    .designer-card .social-buttons a {
-      display: inline-block;
-      text-decoration: none;
-      color: #F5F5F5; /* Light Gray (Text) */
-      background-color: #8B5FBF; /* Accent Purple (Buttons, Borders) */
-      padding: 12px 25px;
-      border-radius: 6px;
-      font-weight: bold;
-      font-size: 16px;
-      transition: background-color 0.3s ease;
-    }
-
-    .designer-card .social-buttons a:hover {
-      background-color: #6A0DAD; /* Primary Purple (Buttons & Titles) on hover */
-    }
-
-    /* Services Section Styles */
-    .services-section {
-      background-color: #1E132F; /* Dark Purple (Main Background) */
-      padding: 60px 20px;
-      text-align: center;
-      margin-bottom: 40px; /* Added margin for separation */
-    }
-
-    .services-section h2 {
-      color: #BB86FC; /* Section title pop-out */
-      font-size: 2rem;
-      margin-bottom: 40px;
-      font-family: 'Poppins', 'Montserrat', sans-serif; /* Headings font */
-    }
-
-    .services-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 30px;
-      max-width: 1000px;
-      margin: 0 auto;
-    }
-
-    .service-card {
-      background-color: #1E132F; /* Dark Purple (Main Background) */
-      padding: 25px 20px;
-      border-radius: 16px;
-      text-align: center;
-      transition: transform 0.6s ease-out, opacity 0.6s ease-out; /* Slower transition */
-      border: 1px solid #A774C7; /* Subtle Accent Purple (Borders, Footer) */
-      opacity: 0; /* Hidden by default for animation */
-      transform: translateY(40px); /* More pronounced slide-up effect */
-    }
-
-    .service-card.is-visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .service-card:hover {
-      transform: translateY(-8px);
-    }
-
-    .service-card .icon {
-      width: 60px;
-      height: 60px;
-      background-color: rgba(187, 134, 252, 0.1); /* Tint from Section title pop-out */
-      border-radius: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin: 0 auto 20px auto;
-    }
-
-    .service-card .icon svg {
-        color: #BB86FC; /* Section title pop-out */
-    }
-
-    .service-card h3 {
-      font-size: 1.3rem;
-      color: #F5F5F5; /* Light Gray (Text) */
-      margin-bottom: 10px;
-      font-family: 'Poppins', 'Montserrat', sans-serif; /* Headings font */
-    }
-
-    .service-card p {
-      color: #D3D3D3; /* Subheading text / muted text */
-      font-size: 0.95rem;
-      line-height: 1.6;
-    }
-
-    @media (min-width: 768px) {
-      .services-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-
-    /* Added for 3-column layout on larger screens to accommodate new service */
-    @media (min-width: 1024px) {
-        .services-grid {
-            grid-template-columns: repeat(3, 1fr);
-        }
-    }
-
-    footer {
-      text-align: center;
-      padding: 25px 10px;
-      font-size: 14px;
-      background-color: #1E132F; /* Dark Purple (Main Background) */
-      color: #A774C7; /* Subtle Accent Purple (Borders, Footer) */
-      border-top: 1px solid #A774C7; /* Subtle Accent Purple (Borders, Footer) */
-    }
-
-    /* Removed footer .footer-links a and .social-icons specific styles to remove the links */
-
-    footer p {
-      margin-top: 10px; /* Adjust spacing for new email line */
-      color: #F5F5F5; /* Ensure copyright text is visible */
-    }
-
-    footer a {
-      color: #8B5FBF; /* Accent Purple for email link */
-      text-decoration: none;
-      transition: color 0.3s ease;
-    }
-
-    footer a:hover {
-      color: #6A0DAD; /* Primary Purple on hover */
-    }
-
-    .let-s-get-started-button-container {
-      text-align: center;
-      padding: 40px 20px;
-      background-color: #1E132F; /* Match main background */
-    }
-
-    .let-s-get-started-button {
-      display: inline-block;
-      text-decoration: none;
-      color: #F5F5F5; /* Light Gray (Text) */
-      background-color: #6A0DAD; /* Primary Purple for strong visual */
-      padding: 18px 35px;
-      border-radius: 8px;
-      font-weight: bold;
-      font-size: 20px;
-      transition: background-color 0.3s ease;
-    }
-
-    .let-s-get-started-button:hover {
-      background-color: #8B5FBF; /* Accent Purple on hover */
-    }
-
-    header::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(45deg, #1E132F, #6A0DAD); /* Dark Purple (Main Background) to Primary Purple */
-      animation: gradientBG 15s ease infinite;
-      opacity: 0.3;
-      z-index: -1;
-    }
-
-    @keyframes gradientBG {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-    /* AOS specific section transitions */
-    section {
-      transition: transform 0.6s ease, opacity 0.6s ease; /* Ensure sections animate correctly with AOS */
+    @media (prefers-reduced-motion:reduce){
+      *{ animation:none !important; transition:none !important }
+      .service-card, .card{ transform:none !important }
+      .intro-overlay{ transition:none !important }
     }
   </style>
 </head>
-<body>
+<body class="intro-lock">
+  <!-- ====== INTRO OVERLAY (Logo spinner then fade-out) ====== -->
+  <div class="intro-overlay" id="intro">
+    <span class="intro-logo-wrap">
+      <img src="https://i.ibb.co/B2kL1Z7n/logo.png" alt="AumVerse Logo"/>
+    </span>
+  </div>
 
   <header>
-    <img src="https://i.ibb.co/ZRjTbY2L/file-00000000650861f9bad2ae3237c73eb5.png" alt="AumVerse Logo" />
-    <h1 data-aos="fade-up">We design meaningful brand identities and powerful logos.</h1>
-    <p data-aos="fade-up" data-aos-delay="200">Bringing your vision to life through distinctive, memorable, and impactful branding solutions that leave a lasting impression.</p>
-    <div class="header-buttons">
-      <a href="https://docs.google.com/forms/d/e/1FAIpQLSdqVf2SC38z-0tUqZqamcJumAq4GlMx8sBiQTUKe63I934qdA/viewform?usp=header" class="cta-button" data-aos="zoom-in" data-aos-delay="400">Schedule a Call</a>
-      <a href="#designer-showcase" class="cta-button" data-aos="zoom-in" data-aos-delay="500">Meet Our Designer</a>
+    <!-- Header logo (same asset as intro) -->
+    <div class="logo-block" id="locked-logo" data-lock="true">
+      <a href="https://ibb.co/B2kL1Z7n">
+        <img src="https://i.ibb.co/B2kL1Z7n/logo.png" alt="AumVerse Logo" border="0">
+      </a>
     </div>
+
+    <h1 data-aos="fade-up">We design meaningful brand identities and powerful logos.</h1>
+    <p data-aos="fade-up" data-aos-delay="200">
+      Bringing your vision to life through distinctive, memorable, and impactful branding solutions that leave a lasting impression.
+    </p>
   </header>
 
   <div class="container">
-
     <div class="card" data-aos="fade-right">
       <h2>About Aume Designs</h2>
       <p>
@@ -373,96 +308,206 @@
         Sargam specializes in crafting unique logos, building strong brand identities, and designing impactful packaging that resonates with audiences. Her creative vision blends functionality with aesthetics, bringing brands to life with clarity and emotion.
       </p>
       <div class="social-buttons">
-        <a href="https://www.behance.net/sargamraao1" target="_blank">See Her Work</a>
-        <a href="https://www.linkedin.com/in/sargam-raao-465565368?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" target="_blank">Connect on LinkedIn</a>
+        <a href="https://www.behance.net/sargamraao1" target="_blank" rel="noopener">See Her Work</a>
+        <a href="https://www.linkedin.com/in/sargam-raao-465565368?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" target="_blank" rel="noopener">Connect on LinkedIn</a>
       </div>
     </div>
 
     <section class="services-section">
-      <h2 data-aos="fade-up">Our Services</h2>
+      <h2 data-aos="fade-up">Services we provide</h2>
+
       <div class="services-grid">
-        <div class="service-card" data-aos="fade-up" data-aos-delay="100">
+        <!-- Logo Designing -->
+        <div class="service-card" data-aos="zoom-in-up" data-aos-delay="80">
           <div class="icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#BB86FC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-pen-tool"><path d="M12 19l7-7 3 3-7 7-3-3z"></path><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l1.5-7.5z"></path><path d="M2 2l7.5 7.5"></path></svg>
+            <!-- Pen tool icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 19l7-7 3 3-7 7-3-3z"></path>
+              <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l1.5-7.5z"></path>
+              <path d="M2 2l7.5 7.5"></path>
+            </svg>
           </div>
           <h3>Logo Designing</h3>
-          <p>Transform your brand's vision into a captivating masterpiece that speaks volumes with just a glance. Let your logo do the talking, while you do the business!</p>
+          <p>Transform your brand’s vision into a distinctive mark that communicates in a glance and endures for years.</p>
         </div>
-        <div class="service-card" data-aos="fade-up" data-aos-delay="200">
+
+        <!-- Branding -->
+        <div class="service-card" data-aos="zoom-in-up" data-aos-delay="140">
           <div class="icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#BB86FC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-target"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
+            <!-- Target icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <circle cx="12" cy="12" r="6"></circle>
+              <circle cx="12" cy="12" r="2"></circle>
+            </svg>
           </div>
           <h3>Branding</h3>
-          <p>Unleash the magic of storytelling as we craft a brand experience that sparks love at first sight. Stand out, stay memorable, and conquer your audience!</p>
+          <p>Define your voice, visuals, and values with a cohesive identity system that builds recognition and trust.</p>
         </div>
-        <div class="service-card" data-aos="fade-up" data-aos-delay="300">
+
+        <!-- Packaging Design -->
+        <div class="service-card" data-aos="zoom-in-up" data-aos-delay="200">
           <div class="icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#BB86FC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-package"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+            <!-- Package icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line>
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+              <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+              <line x1="12" y1="22.08" x2="12" y2="12"></line>
+            </svg>
           </div>
           <h3>Packaging Design</h3>
-          <p>Unwrap success with sensational packaging designs that make your products pop! Leave a lasting impression and make your competition green with envy.</p>
+          <p>Create shelf impact with structure, materials, and graphics that attract attention and communicate benefits.</p>
         </div>
-        <div class="service-card" data-aos="fade-up" data-aos-delay="400">
+
+        <!-- Graphic Design -->
+        <div class="service-card" data-aos="zoom-in-up" data-aos-delay="260">
           <div class="icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#BB86FC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-monitor"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+            <!-- Monitor icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+              <line x1="8" y1="21" x2="16" y2="21"></line>
+              <line x1="12" y1="17" x2="12" y2="21"></line>
+            </svg>
           </div>
           <h3>Graphic Design</h3>
-          <p>From pixel to perfection, our design wizards will turn your ideas into visual wonders. Wow the world with eye-catching graphics that steal the spotlight!</p>
+          <p>From social creatives to print collateral, we craft visuals that are clear, compelling, and on-brand.</p>
         </div>
-        <div class="service-card" data-aos="fade-up" data-aos-delay="500">
+
+        <!-- Website Design & Development -->
+        <div class="service-card" data-aos="zoom-in-up" data-aos-delay="320">
           <div class="icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#BB86FC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-layout"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+            <!-- Code/website icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+              <path d="M8 8l-3 4 3 4"></path>
+              <path d="M16 8l3 4-3 4"></path>
+            </svg>
           </div>
-          <h3>UI/UX Design</h3>
-          <p>Crafting intuitive and engaging digital experiences, we design user interfaces that are both beautiful and highly functional, ensuring a seamless journey for your audience.</p>
+          <h3>Website Design & Development</h3>
+          <p>Design-first, performance-driven websites built with modern stacks—responsive, fast, accessible, and easy to maintain.</p>
         </div>
+      </div>
     </section>
-
   </div>
 
-  <div class="let-s-get-started-button-container" data-aos="zoom-in" data-aos-delay="200">
-    <a href="https://docs.google.com/forms/d/e/1FAIpQLSdqVf2SC38z-0tUqZqamcJumAq4GlMx8sBiQTUKe63I934qdA/viewform?usp=header" class="let-s-get-started-button">Let's Get Started</a>
-  </div>
+  <!-- CTA moved to END -->
+  <section class="cta-end" id="get-started">
+    <a href="https://docs.google.com/forms/d/e/1FAIpQLSdqVf2SC38z-0tUqZqamcJumAq4GlMx8sBiQTUKe63I934qdA/viewform?usp=header" class="let-s-get-started-button">Schedule a Call</a>
+  </section>
 
   <footer id="contact">
     <p>© 2025 AumVerse. All rights reserved.</p>
     <p>Email: <a href="mailto:infoaume.in@gmail.com">infoaume.in@gmail.com</a></p>
   </footer>
 
+  <!-- AOS -->
   <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+
   <script>
-    AOS.init({
-      duration: 1000, // animation duration in ms
-      once: true,     // only animate once
-    });
+    /* ----- INTRO OVERLAY CONTROL ----- */
+    (function(){
+      const intro = document.getElementById('intro');
+      const MIN_DURATION = 2200; // spin time
+      const FADE_DURATION = 600; // CSS fade .6s
+      const HARD_TIMEOUT = 4000; // safety timeout
 
-    // Original Intersection Observer for service cards (can coexist with AOS, or remove if AOS handles all desired animations)
-    document.addEventListener('DOMContentLoaded', () => {
-      const serviceCards = document.querySelectorAll('.service-card');
-
-      const observerOptions = {
-        root: null, // viewport as root
-        rootMargin: '0px',
-        threshold: 0.2 // 20% of the item must be visible
+      const finish = () => {
+        if (!intro) return;
+        intro.classList.add('hidden');
+        setTimeout(() => {
+          intro.remove();
+          document.body.classList.remove('intro-lock');
+        }, FADE_DURATION);
       };
 
-      const observer = new IntersectionObserver((entries, observer) => {
-        entries.forEach(entry => {
+      // Finish after spin + fade
+      setTimeout(finish, MIN_DURATION);
+      // Safety fallback
+      setTimeout(finish, HARD_TIMEOUT);
+      // If reduced motion, finish fast
+      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        setTimeout(finish, 300);
+      }
+    })();
+
+    // Keep exact header logo snippet intact
+    document.addEventListener('DOMContentLoaded', () => {
+      const holder = document.getElementById('locked-logo');
+      if (!holder) return;
+      const desiredHTML = '<a href="https://ibb.co/B2kL1Z7n"><img src="https://i.ibb.co/B2kL1Z7n/logo.png" alt="AumVerse Logo" border="0"></a>';
+      const normalize = (s) => s.replace(/\s+/g,' ').trim();
+      const enforce = () => { if (normalize(holder.innerHTML)!==normalize(desiredHTML)) holder.innerHTML = desiredHTML; };
+      enforce();
+      document.addEventListener('visibilitychange', enforce);
+      window.addEventListener('hashchange', enforce);
+    });
+
+    // AOS settings
+    AOS.init({ duration: 800, easing: 'ease-out-quart', once: true, offset: 80 });
+
+    // IntersectionObserver stagger for service cards
+    document.addEventListener('DOMContentLoaded', () => {
+      const serviceCards = document.querySelectorAll('.service-card');
+      const options = { root:null, rootMargin:'0px', threshold:0.2 };
+      let delayBase = 0;
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
           if (entry.isIntersecting) {
+            entry.target.style.transitionDelay = (delayBase * 80) + 'ms';
             entry.target.classList.add('is-visible');
-            // If AOS is used extensively, you might remove unobserve here to let AOS manage it,
-            // or keep it if this specific animation is custom.
-            // For now, it stays to ensure this specific effect.
-            // observer.unobserve(entry.target);
+            delayBase++;
           }
         });
-      }, observerOptions);
-
-      serviceCards.forEach(card => {
-        observer.observe(card);
-      });
+      }, options);
+      serviceCards.forEach(card => io.observe(card));
     });
-  </script>
 
+    // Tilt effects
+    window.addEventListener('load', () => {
+      const tiltTargets = document.querySelectorAll('.service-card, .card');
+      if (window.VanillaTilt) {
+        VanillaTilt.init(tiltTargets, { max:10, speed:500, glare:true, 'max-glare':0.18, gyroscope:true });
+      }
+    });
+
+    // GSAP: gentle parallax on header copy (logo untouched)
+    window.addEventListener('load', () => {
+      if (window.gsap && window.ScrollTrigger) {
+        gsap.registerPlugin(ScrollTrigger);
+        const title = document.querySelector('header h1');
+        const subtitle = document.querySelector('header p');
+        if (title){
+          gsap.to(title, {
+            yPercent:-6, ease:'none',
+            scrollTrigger:{ trigger:document.body, start:'top top', end:'+=500', scrub:true }
+          });
+        }
+        if (subtitle){
+          gsap.to(subtitle, {
+            yPercent:-4, ease:'none',
+            scrollTrigger:{ trigger:document.body, start:'top top', end:'+=500', scrub:true }
+          });
+        }
+      }
+    });
+
+    // Reduced motion cleanup
+    const mediaReduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+    if (mediaReduce.matches) {
+      document.documentElement.classList.add('reduced-motion');
+      window.addEventListener('load', () => {
+        if (window.VanillaTilt) {
+          document.querySelectorAll('.service-card, .card').forEach(el => {
+            if (el.vanillaTilt) el.vanillaTilt.destroy();
+          });
+        }
+        if (window.gsap && window.ScrollTrigger) {
+          window.ScrollTrigger.getAll().forEach(t => t.kill());
+        }
+      });
+    }
+  </script>
 </body>
 </html>
+
