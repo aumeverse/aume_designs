@@ -1,405 +1,869 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>AumVerse - Aume Designs</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AumVerse</title>
+    <!-- Updated font links for Montserrat -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet"/>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+    <style>
+        /* General body and html styling */
+        body {
+            margin: 0;
+            font-family: 'Montserrat', sans-serif;
+            color: #FFFFFF;
+            background-color: #000000;
+            background-attachment: fixed;
+            position: relative;
+            opacity: 0; /* Initial opacity for fade-in effect */
+            transition: opacity 1s ease-in-out;
+            cursor: default; /* Use the default cursor for better navigation */
+        }
 
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&family=Montserrat:wght@400;700&family=Open+Sans:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet"/>
+        body.loaded {
+            opacity: 1;
+        }
 
-  <!-- AOS -->
-  <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet"/>
+        html {
+            scroll-behavior: smooth;
+        }
 
-  <!-- VanillaTilt -->
-  <script defer src="https://cdn.jsdelivr.net/npm/vanilla-tilt@1.8.1/dist/vanilla-tilt.min.js"></script>
+        #bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        /* Header Styling */
+        header {
+            text-align: center;
+            background-color: transparent; 
+            padding: 80px 20px 30px; /* Increased top padding to bring the whole unit down */
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
-  <!-- GSAP + ScrollTrigger -->
-  <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+        /* CSS for the small spinning logo */
+        .top-spinning-logo {
+            max-width: 170px;
+            height: auto;
+            margin-bottom: -135px; /* Adjusted to bring it closer to the brand name */
+            animation: spin 5s linear infinite; /* Spin continuously */
+        }
+        
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        
+        /* CSS for the main brand name logo */
+        .header-logo {
+            max-width: 550px;
+            height: auto;
+            margin-top: 0;
+            /* Added the floating animation */
+            animation: floating 4s ease-in-out infinite; 
+        }
 
-  <style>
-    :root{
-      --bg:#000;
-      --bg-2:#0A0A0A;
-      --text:#FFF;
-      --muted:#B5B5B5;
-      --border:#2A2A2A;
-      --border-2:#333;
-      --btn-bg:#000;
-      --btn-text:#FFF;
-      --btn-hover-bg:#FFF;
-      --btn-hover-text:#000;
-      --shadow-1:0 10px 25px rgba(0,0,0,0.45);
-      --shadow-2:0 20px 50px rgba(0,0,0,0.65);
+        /* New keyframes for the floating animation */
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
 
-      /* Global spacing */
-      --section-pt: 84px;
-      --section-pb: 84px;
-      --block-gap: 48px;
-    }
+        .navbar {
+            background-color: transparent;
+            position: sticky;
+            top: 20px;
+            z-index: 1000;
+            padding: 0;
+            box-shadow: none;
+            text-align: center;
+        }
 
-    html{scroll-behavior:smooth}
-    body{
-      margin:0;
-      font-family:'Open Sans','Roboto',sans-serif;
-      background-color:var(--bg);
-      color:var(--text);
-      background-attachment:fixed;
-      transition:background-color .5s ease,color .5s ease;
-    }
+        .navbar ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
 
-    /* INTRO OVERLAY */
-    body.intro-lock{ overflow:hidden }
-    .intro-overlay{
-      position:fixed; inset:0; background:#000;
-      display:grid; place-items:center;
-      z-index:9999;
-      opacity:1; visibility:visible;
-      transition:opacity .6s ease, visibility .6s ease;
-    }
-    .intro-overlay.hidden{ opacity:0; visibility:hidden; pointer-events:none }
-    .intro-logo-wrap{ display:block; width:min(200px, 44vw); line-height:0 }
-    .intro-logo-wrap img{ width:100%; height:auto; display:block; filter:none; background:transparent; animation:spinLogo 2.1s ease-in-out forwards }
-    @keyframes spinLogo{ 0%{transform:rotate(0)} 90%{transform:rotate(350deg)} 100%{transform:rotate(360deg)} }
-    @media (prefers-reduced-motion:reduce){ .intro-logo-wrap img{ animation:none } }
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            list-style: none;
+            padding: 10px;
+            margin-top: 10px;
+            min-width: 180px;
+            background-color: #111111;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            visibility: hidden;
+            opacity: 0;
+            transition: visibility 0s, opacity 0.3s linear;
+        }
 
-    /* HEADER */
-    header{
-      text-align:center;
-      background:var(--bg);
-      padding: calc(var(--section-pt) - 20px) 20px calc(var(--section-pb) - 24px);
-      position:relative;
-      border-bottom:1px solid var(--border);
-    }
-    .logo-block{ display:block; width:min(200px, 45vw); margin:0 auto 8px; line-height:0 }
-    .logo-block img{ width:100%; height:auto; display:block; background:transparent; filter:none }
+        .dropdown-menu li {
+            padding: 8px 0;
+            text-align: center;
+        }
+        
+        .dropdown-menu a {
+            padding: 10px 20px;
+            color: #FFFFFF;
+            border-radius: 5px;
+            text-decoration: none;
+            display: block;
+        }
 
-    header h1{
-      color:#FFF;
-      margin:12px auto 10px; font-size:44px; line-height:1.16;
-      max-width:1200px; font-family:'Poppins','Montserrat',sans-serif; letter-spacing:.2px;
-    }
-    header p{
-      font-size:20px; color:var(--muted); margin:16px auto 0;
-      max-width:1000px; line-height:1.7; padding:0 12px;
-    }
-    .header-buttons{ display:none }
+        .dropdown:hover .dropdown-menu {
+            visibility: visible;
+            opacity: 1;
+        }
 
-    /* LAYOUT */
-    .container{ max-width:1100px; margin:0 auto; padding: 0 20px }
-    .stack > * + *{ margin-top: var(--block-gap) }
+        .navbar a {
+            display: inline-block;
+            padding: 10px 25px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 16px;
+            color: #FFFFFF;
+            background: transparent;
+            transition: color 0.3s ease;
+        }
 
-    /* CARDS */
-    .card{
-      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,0)) , var(--bg-2);
-      padding:32px; border-radius:16px;
-      box-shadow:var(--shadow-1);
-      transition:transform .3s ease, box-shadow .3s ease;
-      border:1px solid var(--border);
-      transform-style:preserve-3d;
-      backdrop-filter:saturate(110%) contrast(105%);
-    }
-    .card:hover{ transform:translateY(-6px); box-shadow:var(--shadow-2) }
-    .card h2{ color:#FFF; margin-bottom:16px; font-size:30px; font-family:'Poppins','Montserrat',sans-serif }
-    .card p{ font-size:16px; line-height:1.8; color:#EFEFEF }
+        .navbar a:hover {
+            color: #3AB4F2;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+        
+        .about-aumeverse-section {
+            max-width: 800px;
+            margin: 60px auto;
+            padding: 40px;
+            text-align: left;
+            background-color: rgba(17, 17, 17, 0.7); /* Lighter translucent background */
+            border: 1px solid rgba(34, 34, 34, 0.7);
+            border-radius: 20px;
+            box-shadow: none;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: transform 0.3s ease;
+        }
+        .about-aumeverse-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .about-aumeverse-section p {
+            font-size: 16px;
+            line-height: 1.8;
+            color: #E0E3EB;
+            text-align: left;
+        }
+        
+        .solid-section {
+            text-align: center;
+            margin: 20px auto;
+            padding: 20px;
+            max-width: 800px;
+            background-color: rgba(26, 26, 26, 0.7); /* Lighter translucent background */
+            border-radius: 10px;
+            border: 1px solid rgba(34, 34, 34, 0.7);
+            /* Keeping a floating effect, but removing the tilt */
+            animation: float-section 6s ease-in-out infinite;
+        }
 
-    /* DESIGNER */
-    .designer-card{ display:flex; flex-direction:column; align-items:center; text-align:center }
-    .designer-card img{
-      width:128px; height:128px; object-fit:cover; margin-bottom:20px;
-      border-radius:20%; border:4px solid #fff; outline:4px solid transparent; outline-offset:8px;
-      box-shadow:0 6px 18px rgba(0,0,0,.5);
-    }
-    .designer-card h3{ color:#FFF; margin-bottom:6px; font-size:24px; font-family:'Poppins','Montserrat',sans-serif }
-    .designer-card h4{ color:var(--muted); margin-top:0; font-size:18px }
-    .designer-card .bio{ font-size:16px; line-height:1.8; color:#EFEFEF; max-width:720px; margin-bottom:24px }
-    .designer-card .social-buttons{ display:flex; gap:20px; flex-wrap:wrap; justify-content:center }
-    .designer-card .social-buttons a{
-      background:var(--btn-bg); color:var(--btn-text); border:1px solid var(--border-2);
-      padding:12px 26px; border-radius:8px; font-weight:700; font-size:16px; transition:all .25s ease
-    }
-    .designer-card .social-buttons a:hover{ background:var(--btn-hover-bg); color:var(--btn-hover-text); transform:translateY(-2px) }
+        @keyframes float-section {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
 
-    /* SERVICES */
-    .services-section{
-      background:var(--bg);
-      padding: var(--section-pt) 20px var(--section-pb);
-      text-align:center; margin: var(--block-gap) 0;
-      border-top:1px solid var(--border); border-bottom:1px solid var(--border);
-    }
-    .services-section h2{ color:#FFF; font-size:2.1rem; margin-bottom:40px; font-family:'Poppins','Montserrat',sans-serif }
+        .solid-section h2 {
+            font-family: 'Montserrat', sans-serif;
+            color: #FFFFFF;
+            margin: 0;
+            font-size: 24px;
+            overflow: hidden;
+            white-space: nowrap;
+        }
 
-    .services-grid{
-      --gap:30px;
-      display:grid; grid-template-columns:1fr; gap:var(--gap);
-      max-width:1100px; margin:0 auto; perspective:1200px;
-    }
-    @media (min-width:768px){ .services-grid{ grid-template-columns:repeat(2,1fr) } }
-    @media (min-width:1100px){ .services-grid{ grid-template-columns:repeat(3,1fr) } }
+        .animated-word {
+            display: inline-block;
+            opacity: 0;
+            transform: translateX(100px);
+            transition: transform 0.6s ease-out, opacity 0.6s ease-out;
+        }
+        .solid-section.animate .animated-word {
+            opacity: 1;
+            transform: translateX(0);
+        }
 
-    .service-card{
-      position:relative;
-      background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,0)) , var(--bg-2);
-      border:1px solid var(--border); border-radius:18px;
-      padding:30px 24px 26px; text-align:center; transform-style:preserve-3d;
-      transition:transform .5s cubic-bezier(.2,.8,.2,1), box-shadow .35s ease, border-color .35s ease;
-      box-shadow:0 8px 24px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.03);
-      overflow:hidden; will-change:transform; opacity:0; transform:translateY(42px) scale(.98);
-    }
-    .service-card.is-visible{ opacity:1; transform:translateY(0) scale(1) }
-    .service-card:hover{ transform:translateY(-10px) rotateX(2deg) rotateY(-2deg); box-shadow:0 22px 60px rgba(0,0,0,.6); border-color:#3a3a3a }
-    .service-card::before{
-      content:''; position:absolute; inset:-120% -120% auto -120%; height:260%;
-      background:conic-gradient(from 180deg, transparent 0 30%, rgba(255,255,255,.08) 40% 60%, transparent 70% 100%);
-      opacity:.25; animation:shine 8s linear infinite; pointer-events:none;
-    }
-    @keyframes shine{ 0%{ transform:translateY(0) } 100%{ transform:translateY(-20%) } }
-    .service-card .icon{
-      width:66px; height:66px; margin:0 auto 18px; display:flex; align-items:center; justify-content:center;
-      border-radius:14px; background:rgba(255,255,255,.06); box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);
-      transform:translateZ(24px); animation:floatIcon 6s ease-in-out infinite;
-    }
-    .service-card .icon svg{ color:#FFF; stroke:#FFF }
-    @keyframes floatIcon{ 0%,100%{ transform:translateZ(24px) translateY(0) } 50%{ transform:translateZ(24px) translateY(-6px) } }
-    .service-card h3{ font-size:1.28rem; color:#FFF; margin:10px 0 12px; font-family:'Poppins','Montserrat',sans-serif; transform:translateZ(18px) }
-    .service-card p{ color:var(--muted); font-size:1rem; line-height:1.8; transform:translateZ(12px) }
+        .container h2 {
+            text-align: left;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            color: #FFFFFF;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        
+        .about-aumeverse-section h2 {
+            text-align: left;
+            font-family: 'Montserrat', sans-serif;
+            color: #FFFFFF;
+            margin-bottom: 20px;
+            font-size: 32px;
+            font-weight: 700;
+            min-height: 40px;
+            border-right: 3px solid transparent;
+        }
+        
+        .blinking-cursor {
+            font-weight: 100;
+            border-right: 3px solid #E0E3EB;
+            animation: blink-caret 1s step-end infinite;
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-right-color: transparent }
+            50% { border-right-color: #E0E3EB; }
+        }
 
-    /* CTA END */
-    .cta-end{
-      padding: calc(var(--section-pt) - 8px) 20px calc(var(--section-pb) - 8px);
-      text-align:center; border-top:1px solid var(--border); background:var(--bg); margin-top: var(--block-gap);
-    }
-    .cta-heading{
-      font-family:'Poppins','Montserrat',sans-serif;
-      font-weight:800; font-size:28px; line-height:1.2;
-      color:#FFF; margin:0 auto 18px; letter-spacing:.3px;
-    }
-    .let-s-get-started-button{
-      display:inline-block; text-decoration:none; color:var(--btn-text); background:var(--btn-bg);
-      padding:16px 34px; border-radius:10px; font-weight:700; font-size:18px; border:1px solid var(--border-2);
-      transition:transform .2s ease, color .25s ease, background-color .25s ease, box-shadow .25s ease;
-      background-image:linear-gradient(currentColor, currentColor); background-size:0 2px; background-position:0 100%; background-repeat:no-repeat;
-    }
-    .let-s-get-started-button:hover, .let-s-get-started-button:focus-visible{
-      background:var(--btn-hover-bg); color:var(--btn-hover-text); background-size:100% 2px; outline:none; transform:translateY(-2px) scale(1.03);
-      box-shadow:0 12px 26px rgba(255,255,255,0.06);
-    }
+        .card {
+            background-color: rgba(17, 17, 17, 0.7); /* Lighter translucent background */
+            padding: 30px;
+            border-radius: 20px;
+            border: 1px solid rgba(34, 34, 34, 0.7);
+            box-shadow: none;
+            margin-bottom: 30px;
+            opacity: 0;
+            transform: translateX(-100px);
+            transition: all 0.6s ease;
+            /* New floating effect, removing the tilt */
+            animation: float-section 6s ease-in-out infinite;
+        }
 
-    /* FOOTER */
-    footer{
-      text-align:center; padding: 28px 10px; font-size:14px; background:var(--bg); color:#CFCFCF;
-      border-top:1px solid var(--border);
-    }
-    footer p{ margin-top:10px; color:#EDEDED }
-    footer a{ color:#FFF; text-decoration:none; transition:color .3s ease, text-decoration-color .3s ease; border-bottom:1px solid transparent }
-    footer a:hover{ color:#000; background:#FFF; padding:2px 4px; border-radius:4px }
+        .card:nth-child(even) {
+            transform: translateX(100px);
+        }
 
-    section{ transition:transform .6s ease, opacity .6s ease }
+        .card.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
 
-    @media (prefers-reduced-motion:reduce){
-      *{ animation:none !important; transition:none !important }
-      .service-card, .card{ transform:none !important }
-      .intro-overlay{ transition:none !important }
-    }
-  </style>
+        /* New styles for the description dropdown */
+        .card-description {
+            display: none;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+        }
+
+        .card-description.show {
+            display: block;
+            max-height: 500px; /* Adjust as needed for the content length */
+        }
+        
+        .card-description p {
+            margin-top: 15px;
+            margin-bottom: 0;
+        }
+
+        /* New styles for the buttons */
+        .know-more-text {
+            font-size: 16px;
+            color: #3AB4F2;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            margin-top: 15px;
+            font-weight: 700; /* Made the font bold */
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .know-more-text:hover {
+            color: #2553d6;
+        }
+
+        .arrow-icon {
+            margin-left: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .know-more-text.expanded .arrow-icon {
+            transform: rotate(90deg); /* Rotates the arrow on click */
+        }
+
+        .card .visit-btn {
+            display: block;
+            width: fit-content;
+            margin: 15px auto 0;
+            text-decoration: none;
+            color: #FFFFFF;
+            background-color: #3AB4F2;
+            padding: 10px 18px;
+            border-radius: 6px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            text-align: center;
+        }
+        .card .visit-btn:hover {
+            background-color: #2553d6;
+        }
+
+        .form-section {
+            max-width: 600px;
+            margin: 60px auto;
+            padding: 40px;
+            background-color: rgba(17, 17, 17, 0.7); /* Lighter translucent background */
+            border-radius: 20px;
+            border: 1px solid rgba(34, 34, 34, 0.7);
+            box-shadow: none;
+            /* New floating effect, removing the tilt */
+            animation: float-section 6s ease-in-out infinite;
+        }
+
+        .form-section h2 {
+            font-family: 'Montserrat', sans-serif;
+            text-align: center;
+            color: #FFFFFF;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #FFFFFF;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            background-color: #1A1A1A;
+            border: 1px solid #333333;
+            border-radius: 8px;
+            color: #FFFFFF;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #3AB4F2;
+            box-shadow: 0 0 8px rgba(58, 180, 242, 0.5);
+        }
+        
+        /* New class for the form validation message */
+        .form-message {
+            text-align: center;
+            color: #f00;
+            margin-bottom: 15px;
+            display: none; /* Hidden by default */
+        }
+
+        .form-section button {
+            display: block;
+            width: fit-content;
+            margin: 20px auto 0;
+            padding: 12px 24px;
+            background-color: #3AB4F2;
+            color: #FFFFFF;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .form-section button:hover {
+            background-color: #2553d6;
+        }
+
+        .required {
+            color: #f00;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px 10px;
+            font-size: 14px;
+            background-color: transparent;
+            color: #A0A0A0;
+        }
+
+        footer a {
+            color: #3AB4F2;
+            text-decoration: none;
+        }
+
+        .whatsapp-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            background-color: #25d366;
+            color: white;
+            border-radius: 50px;
+            text-decoration: none;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .whatsapp-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .whatsapp-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 10px;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path fill="white" d="M380.9 97.4C339.4 55.9 283.4 33.1 224 33.1c-121.5 0-220 98.5-220 220 0 38.3 9.7 75.8 28.2 109.1L0 480l126.9-33.8c32.4 17.6 69 26.8 107.1 26.8h.1c121.5 0 220-98.5 220-220 0-59.4-22.9-115.4-64.4-156.9zM224 433.8h.1c32.7 0 64.1-8.9 91.6-25.9L403 448l-26.6-96.1c17.5-30.8 27.2-65.4 27.2-101.9 0-97.2-79-176.2-176.2-176.2-97.2 0-176.2 79-176.2 176.2 0 36.5 9.7 71.1 27.2 101.9L45 448l79.4-21.4c27.5 17 58.9 25.9 91.6 25.9zM315.8 261.2c-2.4-1.2-14.7-7.2-17-8.1-2.3-.9-4-.8-5.6 1.1-1.6 1.9-6.3 7.8-7.7 9.4-1.4 1.5-2.8 1.7-5.1 1.2-2.3-.5-9.6-3.5-18.3-11.3-6-5.4-10-12.1-11.2-14-1.2-1.9-1.2-1.8-.1-2.9 1.1-1.2 2.4-2.8 3.5-4.2.8-.8 1.5-1.9 2.3-3.1 1.4-2.3.7-4.4-.1-6-1.1-2.1-10.4-25.1-14.3-34.4-3.8-9.1-7.7-7.9-10.4-7.9-2.3 0-5.1-.3-7.8-.3-2.6 0-7 .9-9.5 3.5-2.5 2.6-9.5 9.3-9.5 22.5 0 13.2 9.7 26.1 11.1 28.1 1.4 2 19.2 30 46.6 42.4 27.4 12.4 27.4 8.3 32.5 7.4 5.1-.8 14.7-6 16.5-12.2 1.8-6.1 1.8-11.3 1.2-12.2-.6-.9-2.3-1.4-4.7-2.6z"/></svg>');
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+
+        /* Styling for the new animated heading */
+        .animated-heading-container {
+            text-align: center;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            color: #FFFFFF;
+            font-size: 2rem;
+            margin: 40px auto;
+        }
+        .animated-text {
+            color: #3AB4F2;
+        }
+        .blinking-pipe {
+            animation: blink 1s step-start infinite;
+        }
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+
+        /* Cursor Popping Effect Styling */
+        .cursor-pop {
+            position: fixed;
+            background-color: rgba(58, 180, 242, 0.5);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: pop-out 0.8s forwards;
+            z-index: 9999;
+        }
+        @keyframes pop-out {
+            0% {
+                transform: scale(0.1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1.5);
+                opacity: 0;
+            }
+        }
+    </style>
 </head>
-<body class="intro-lock">
-  <!-- INTRO OVERLAY -->
-  <div class="intro-overlay" id="intro">
-    <span class="intro-logo-wrap">
-      <img src="https://i.ibb.co/B2kL1Z7n/logo.png" alt="AumVerse Logo"/>
-    </span>
-  </div>
+<body>
+    <canvas id="bg"></canvas>
 
-  <header>
-    <div class="logo-block" id="locked-logo" data-lock="true">
-      <a href="https://ibb.co/B2kL1Z7n">
-        <img src="https://i.ibb.co/B2kL1Z7n/logo.png" alt="AumVerse Logo" border="0">
-      </a>
+    <!-- Main content container -->
+    <div id="main-content">
+        <header id="home">
+            <a href="#home">
+                <img class="top-spinning-logo" src="https://i.ibb.co/YTQMWQVD/final-logo-02.png" alt="AumVerse Top Logo" />
+            </a>
+            <a href="#home">
+                <img class="header-logo" id="scroll-spin-logo" src="https://i.ibb.co/yFYj2dHt/final-logo-04.png" alt="AumVerse Logo" />
+            </a>
+        </header>
+
+        <nav class="navbar">
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li class="dropdown">
+                    <a href="#services">Services</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#aumestack">AUMESTACK</a></li>
+                        <li><a href="#aume-design">AUME Design</a></li>
+                        <li><a href="#aume-career">AUME Career</a></li>
+                    </ul>
+                </li>
+                <li><a href="#contact-form">Contact</a></li>
+            </ul>
+        </nav>
+
+        <!-- New animated heading section -->
+        <div class="animated-heading-container">
+            Want to <span id="dynamic-text" class="animated-text"></span><span class="blinking-pipe">|</span>
+        </div>
+
+        <div class="about-aumeverse-section" id="about" data-aos="fade-up">
+            <h2>About AumeVerse</h2>
+            <p>AumVerse is a radiant beacon in a world of infinite possibilities, empowering bold dreamers, innovators, and creators to redefine the possible. We are a unified ecosystem where ideas ignite, ambitions soar, and growth transforms lives.
+Rooted in the sacred essence of 'Aum,' we were founded to bridge chaos into harmony, nurturing entrepreneurship, creativity, and personal evolution. From launching startups to scaling industries, we craft standout visuals—brand identities, logos, motion graphics, packaging, graphics, and websites—that inspire loyalty and impact.
+More than services, AumVerse is a growth philosophy, fostering collaborative communities where challenges fuel achievements. Join us to unlock your potential—because here, growth is the rhythm of existence.</p>
+        </div>
+
+        <div class="solid-section">
+            <h2>
+                <span class="animated-word" style="transition-delay: 0s;">Explore</span>
+                <span class="animated-word" style="transition-delay: 0.1s;">Our</span>
+                <span class="animated-word" style="transition-delay: 0.2s;">Services</span>
+            </h2>
+        </div>
+
+        <div class="container" id="services">
+            <div class="card" id="aumestack">
+                <h2>AUMESTACK</h2>
+                <!-- Description is now a toggleable element -->
+                <p class="know-more-text">Know More <span class="arrow-icon">&#8594;</span></p>
+                <div class="card-description">
+                    <p>AUMESTACK stands as your dedicated growth partner, expertly guiding bold entrepreneurs and established enterprises through the exhilarating journey of expansion and innovation. Specializing in scaling thriving businesses and igniting the potential of new-age startups, we transform visionary ideas into tangible successes by blending meticulous strategic planning, cutting-edge technical execution, and a sharp tactical advantage designed to outshine competitors in today's fast-paced market. Our approach goes beyond mere advice—we collaborate closely to identify untapped opportunities, streamline operations, mitigate risks, and foster sustainable revenue streams, ensuring your venture not only launches but thrives with resilience and adaptability. Whether you're navigating market challenges, optimizing resources for efficiency, or seeking innovative partnerships to amplify your reach, AUMESTACK empowers you with tailored insights and proven methodologies that drive measurable results, turning ambitious dreams into enduring realities.</p>
+                </div>
+                <a href="https://aumeverse.github.io/Aumestack-/" class="visit-btn" target="_blank">Visit</a>
+            </div>
+
+            <div class="card" id="aume-design">
+                <h2>AUME Design</h2>
+                <p class="know-more-text">Know More <span class="arrow-icon">&#8594;</span></p>
+                <div class="card-description">
+                    <p>Aume Designs emerges as your creative ally, delivering professional posters, versatile social media templates, comprehensive branding kits, and innovative digital solutions tailored for local businesses, ambitious creators, and emerging startups. We specialize in transforming everyday visuals into powerful assets that captivate audiences and elevate your presence, blending artistic flair with strategic insight to craft identities that stand out in a crowded digital landscape. Our unique design support goes beyond the ordinary, offering customized guidance that aligns with your vision, enhances brand cohesion, and drives engagement through eye-catching graphics and user-friendly tools. Whether you're launching a campaign, refreshing your online profile, or building a full visual ecosystem, Aume Designs empowers you with high-quality, adaptable resources that boost your visual identity, foster growth, and leave a lasting impression on your target market.</p>
+                </div>
+                <a href="https://aumeverse.github.io/aume_designs/?fbclid=PAQ0xDSwL5k9pleHRuA2FlbQIxMQABp4_CLHPnM1Br02RpEoEFWsGj91b6KNsbyfHs2hTS6y7S56RhDmk9UwoeZbIr_aem_GeWPrxh-63_8yXx47llw7g" class="visit-btn" target="_blank">Visit</a>
+            </div>
+
+            <div class="card" id="aume-career">
+                <h2>AUME Career</h2>
+                <p class="know-more-text">Know More <span class="arrow-icon">&#8594;</span></p>
+                <div class="card-description">
+                    <p>AumCareer emerges as your compassionate compass in the often winding journey of professional fulfillment, offering personalized career guidance, expert resume building, LinkedIn profile optimization, and interactive weekly mentorship workshops designed to illuminate your path forward. Tailored for ambitious students charting their first steps, dedicated job seekers navigating transitions, and seasoned professionals grappling with stagnation or uncertainty, our services blend insightful one-on-one coaching with practical tools to uncover your unique strengths, refine your personal brand, and align your aspirations with actionable opportunities. Through customized strategies, we help you craft compelling narratives that stand out in competitive markets, foster meaningful networks, and build the confidence needed to seize new roles or pivot directions. Our weekly workshops provide a supportive community space for skill-sharing, goal-setting, and real-world advice from experienced mentors, ensuring you gain not just knowledge but the resilience to thrive. Whether you're rebuilding from a career crossroads or accelerating toward your dream position, AumCareer empowers you to transform feelings of being lost into a clear, purposeful trajectory, unlocking doors to growth and success that feel authentically yours.</p>
+                </div>
+                <a href="https://aumeverse.github.io/aume_career_/" class="visit-btn" target="_blank">Visit</a>
+            </div>
+        </div>
+        
+        <div class="form-section" id="contact-form">
+            <h2 style="color: #FFFFFF;">Get in Touch</h2>
+            <form id="contact-form">
+                <!-- Message for form validation errors -->
+                <p class="form-message" id="validation-message"></p>
+
+                <div class="form-group">
+                    <label for="name" style="color: #FFFFFF;">Name<span class="required">*</span></label>
+                    <input type="text" id="name" name="name" required style="background-color: #1A1A1A; border: 1px solid #333333; color: #FFFFFF;">
+                </div>
+                <div class="form-group">
+                    <label for="email" style="color: #FFFFFF;">Email<span class="required">*</span></label>
+                    <input type="email" id="email" name="email" required style="background-color: #1A1A1A; border: 1px solid #333333; color: #FFFFFF;">
+                </div>
+                <div class="form-group">
+                    <label for="linkedin" style="color: #FFFFFF;">LinkedIn Profile</label>
+                    <input type="text" id="linkedin" name="linkedin" style="background-color: #1A1A1A; border: 1px solid #333333; color: #FFFFFF;">
+                </div>
+                <div class="form-group">
+                    <label for="city" style="color: #FFFFFF;">City<span class="required">*</span></label>
+                    <input type="text" id="city" name="city" required style="background-color: #1A1A1A; border: 1px solid #333333; color: #FFFFFF;">
+                </div>
+                <button type="submit" style="background-color: #3AB4F2; color: #FFFFFF;">Submit</button>
+            </form>
+        </div>
+
+        <footer id="contact">
+            <p style="color: #A0A0A0;">Contact us at: <a href="mailto:infoaume.in@gmail.com" style="color: #3AB4F2;">infoaume.in@gmail.com</a></p>
+            <p style="color: #A0A0A0;">© 2025 AumVerse. All rights reserved.</p>
+        </footer>
+
+        <a href="https://wa.me/919372998318" class="whatsapp-btn" target="_blank">
+            <span class="whatsapp-icon"></span>
+            Any Queries?
+        </a>
     </div>
 
-    <h1 data-aos="fade-up">We design meaningful brand identities and powerful logos.</h1>
-    <p data-aos="fade-up" data-aos-delay="200">
-      Bringing your vision to life through distinctive, memorable, and impactful branding solutions that leave a lasting impression.
-    </p>
-  </header>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // === CURSOR POPPING EFFECT ===
+        document.body.addEventListener('mousemove', (e) => {
+            const popEffect = document.createElement('div');
+            popEffect.className = 'cursor-pop';
+            popEffect.style.left = `${e.clientX}px`;
+            popEffect.style.top = `${e.clientY}px`;
+            popEffect.style.width = '15px';
+            popEffect.style.height = '15px';
+            document.body.appendChild(popEffect);
 
-  <div class="container stack" style="margin-top: var(--block-gap); margin-bottom: var(--block-gap);">
-    <div class="card" data-aos="fade-right">
-      <h2>About Aume Designs</h2>
-      <p>
-        Aume Designs, the creative wing of AUME, specializes in crafting compelling visual identities and dynamic motion storytelling. We bring ideas to life with originality and precision, whether it's through unique logo creation, comprehensive brand identity development, or impactful product packaging design. Our mission is to transform concepts into visually stunning realities that resonate with your audience and elevate your brand presence.
-      </p>
-    </div>
-
-    <div class="card designer-card" id="designer-showcase" data-aos="fade-left">
-      <img src="https://i.ibb.co/fYPpCxr6/IMG-20250721-WA0026.jpg" alt="Sargam Raao Profile Picture" data-aos="flip-left" data-aos-delay="200"/>
-      <h3>Sargam Raao</h3>
-      <h4>Lead Graphic & Motion Designer</h4>
-      <p class="bio">
-        Sargam specializes in crafting unique logos, building strong brand identities, and designing impactful packaging that resonates with audiences. Her creative vision blends functionality with aesthetics, bringing brands to life with clarity and emotion.
-      </p>
-      <div class="social-buttons">
-        <a href="https://www.behance.net/sargamraao1" target="_blank" rel="noopener">See Her Work</a>
-        <a href="https://www.linkedin.com/in/sargam-raao-465565368?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" target="_blank" rel="noopener">Connect on LinkedIn</a>
-      </div>
-    </div>
-  </div>
-
-  <section class="services-section">
-    <h2 data-aos="fade-up">Services we provide</h2>
-
-    <div class="services-grid">
-      <div class="service-card" data-aos="zoom-in-up" data-aos-delay="80">
-        <div class="icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 19l7-7 3 3-7 7-3-3z"></path>
-            <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l1.5-7.5z"></path>
-            <path d="M2 2l7.5 7.5"></path>
-          </svg>
-        </div>
-        <h3>Logo Designing</h3>
-        <p>Transform your brand’s vision into a distinctive mark that communicates in a glance and endures for years.</p>
-      </div>
-
-      <div class="service-card" data-aos="zoom-in-up" data-aos-delay="140">
-        <div class="icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"></circle>
-            <circle cx="12" cy="12" r="6"></circle>
-            <circle cx="12" cy="12" r="2"></circle>
-          </svg>
-        </div>
-        <h3>Branding</h3>
-        <p>Define your voice, visuals, and values with a cohesive identity system that builds recognition and trust.</p>
-      </div>
-
-      <div class="service-card" data-aos="zoom-in-up" data-aos-delay="200">
-        <div class="icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line>
-            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
-            <line x1="12" y1="22.08" x2="12" y2="12"></line>
-          </svg>
-        </div>
-        <h3>Packaging Design</h3>
-        <p>Create shelf impact with structure, materials, and graphics that attract attention and communicate benefits.</p>
-      </div>
-
-      <div class="service-card" data-aos="zoom-in-up" data-aos-delay="260">
-        <div class="icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-            <line x1="8" y1="21" x2="16" y2="21"></line>
-            <line x1="12" y1="17" x2="12" y2="21"></line>
-          </svg>
-        </div>
-        <h3>Graphic Design</h3>
-        <p>From social creatives to print collateral, we craft visuals that are clear, compelling, and on-brand.</p>
-      </div>
-
-      <div class="service-card" data-aos="zoom-in-up" data-aos-delay="320">
-        <div class="icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#FFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-            <path d="M8 8l-3 4 3 4"></path>
-            <path d="M16 8l3 4-3 4"></path>
-          </svg>
-        </div>
-        <h3>Website Design & Development</h3>
-        <p>Design-first, performance-driven websites built with modern stacks—responsive, fast, accessible, and easy to maintain.</p>
-      </div>
-    </div>
-  </section>
-
-  <section class="cta-end" id="get-started">
-    <div class="cta-heading" data-aos="fade-up"><strong>Ready to own the spotlight?</strong></div>
-    <a href="https://docs.google.com/forms/d/e/1FAIpQLSdqVf2SC38z-0tUqZqamcJumAq4GlMx8sBiQTUKe63I934qdA/viewform?usp=header" class="let-s-get-started-button" data-aos="zoom-in" data-aos-delay="120">Schedule a Call</a>
-  </section>
-
-  <footer id="contact">
-    <p>© 2025 AumVerse. All rights reserved.</p>
-    <p>Email: <a href="mailto:infoaume.in@gmail.com">infoaume.in@gmail.com</a></p>
-  </footer>
-
-  <!-- AOS -->
-  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
-
-  <script>
-    // INTRO overlay control
-    (function(){
-      const intro = document.getElementById('intro');
-      const MIN_DURATION = 2200, FADE_DURATION = 600, HARD_TIMEOUT = 4000;
-      const finish = () => {
-        if (!intro) return;
-        intro.classList.add('hidden');
-        setTimeout(() => { intro.remove(); document.body.classList.remove('intro-lock'); }, FADE_DURATION);
-      };
-      setTimeout(finish, MIN_DURATION);
-      setTimeout(finish, HARD_TIMEOUT);
-      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) setTimeout(finish, 300);
-    })();
-
-    // Lock header logo snippet
-    document.addEventListener('DOMContentLoaded', () => {
-      const holder = document.getElementById('locked-logo');
-      if (!holder) return;
-      const desiredHTML = '<a href="https://ibb.co/B2kL1Z7n"><img src="https://i.ibb.co/B2kL1Z7n/logo.png" alt="AumVerse Logo" border="0"></a>';
-      const normalize = (s) => s.replace(/\s+/g,' ').trim();
-      const enforce = () => { if (normalize(holder.innerHTML)!==normalize(desiredHTML)) holder.innerHTML = desiredHTML; };
-      enforce(); document.addEventListener('visibilitychange', enforce); window.addEventListener('hashchange', enforce);
-    });
-
-    // AOS
-    AOS.init({ duration: 800, easing: 'ease-out-quart', once: true, offset: 80 });
-
-    // IntersectionObserver stagger
-    document.addEventListener('DOMContentLoaded', () => {
-      const serviceCards = document.querySelectorAll('.service-card');
-      const options = { root:null, rootMargin:'0px', threshold:0.2 };
-      let delayBase = 0;
-      const io = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.style.transitionDelay = (delayBase * 80) + 'ms';
-            entry.target.classList.add('is-visible');
-            delayBase++;
-          }
+            setTimeout(() => {
+                popEffect.remove();
+            }, 800); // Matches the animation duration
         });
-      }, options);
-      serviceCards.forEach(card => io.observe(card));
-    });
 
-    // Tilt effects
-    window.addEventListener('load', () => {
-      const tiltTargets = document.querySelectorAll('.service-card, .card');
-      if (window.VanillaTilt) {
-        VanillaTilt.init(tiltTargets, { max:10, speed:500, glare:true, 'max-glare':0.18, gyroscope:true });
-      }
-    });
+        // === SCROLL ANIMATIONS ===
+        // This script handles the AOS library initialization.
+        AOS.init({
+            duration: 1200,
+            once: false,
+        });
 
-    // GSAP subtle parallax
-    window.addEventListener('load', () => {
-      if (window.gsap && window.ScrollTrigger) {
-        gsap.registerPlugin(ScrollTrigger);
-        const title = document.querySelector('header h1');
-        const subtitle = document.querySelector('header p');
-        if (title){ gsap.to(title, { yPercent:-6, ease:'none', scrollTrigger:{ trigger:document.body, start:'top top', end:'+=500', scrub:true } }); }
-        if (subtitle){ gsap.to(subtitle, { yPercent:-4, ease:'none', scrollTrigger:{ trigger:document.body, start:'top top', end:'+=500', scrub:true } }); }
-      }
-    });
+        // IntersectionObserver for card animations
+        const cards = document.querySelectorAll('.card');
+        const cardObserver = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                } else {
+                    entry.target.classList.remove('visible');
+                }
+            });
+        }, { threshold: 0.1 });
 
-    // Reduced motion cleanup
-    const mediaReduce = window.matchMedia('(prefers-reduced-motion: reduce)');
-    if (mediaReduce.matches) {
-      document.documentElement.classList.add('reduced-motion');
-      window.addEventListener('load', () => {
-        if (window.VanillaTilt) document.querySelectorAll('.service-card, .card').forEach(el => { if (el.vanillaTilt) el.vanillaTilt.destroy(); });
-        if (window.gsap && window.ScrollTrigger) window.ScrollTrigger.getAll().forEach(t => t.kill());
-      });
-    }
-  </script>
+        cards.forEach(card => {
+            cardObserver.observe(card);
+        });
+
+        // IntersectionObserver for "Explore Our Services" heading
+        const solidSection = document.querySelector('.solid-section');
+        const headingObserver = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate');
+                } else {
+                    entry.target.classList.remove('animate');
+                }
+            });
+        }, { threshold: 0.5 });
+
+        if (solidSection) {
+            headingObserver.observe(solidSection);
+        }
+
+        // === CARD DESCRIPTION TOGGLE LOGIC ===
+        document.querySelectorAll('.know-more-text').forEach(item => {
+            item.addEventListener('click', () => {
+                const description = item.nextElementSibling;
+                if (description.classList.contains('show')) {
+                    description.classList.remove('show');
+                    item.classList.remove('expanded');
+                } else {
+                    document.querySelectorAll('.card-description.show').forEach(desc => {
+                        desc.classList.remove('show');
+                        desc.previousElementSibling.classList.remove('expanded');
+                    });
+                    description.classList.add('show');
+                    item.classList.add('expanded');
+                }
+            });
+        });
+
+        // === WHATSAPP FORM SUBMISSION LOGIC ===
+        // Updated to use a custom message box instead of alert()
+        const form = document.getElementById('contact-form');
+        const validationMessage = document.getElementById('validation-message');
+
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const linkedin = document.getElementById('linkedin').value;
+            const city = document.getElementById('city').value;
+            
+            // Basic form validation check
+            if (!name || !email || !city) {
+                validationMessage.textContent = 'Please fill out all required fields.';
+                validationMessage.style.display = 'block';
+                return;
+            } else {
+                validationMessage.style.display = 'none';
+            }
+
+            const message = `Hello, I'd like to get in touch!\n\nName: ${name}\nEmail: ${email}\nLinkedIn: ${linkedin}\nCity: ${city}`;
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappUrl = `https://wa.me/919372998318?text=${encodedMessage}`;
+
+            window.open(whatsappUrl, '_blank');
+        });
+        
+        // === THREE.js Dotted Background ===
+        window.onload = function() {
+            // Fade in the body once the page and all resources are loaded
+            document.body.classList.add('loaded');
+
+            const canvas = document.getElementById('bg');
+            const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 20;
+
+            const particles = new THREE.BufferGeometry();
+            const particleCount = 5000;
+            const positions = new Float32Array(particleCount * 3);
+            const colors = new Float32Array(particleCount * 3);
+
+            const color1 = new THREE.Color(0x111111);
+            const color2 = new THREE.Color(0x222222);
+
+            for (let i = 0; i < particleCount; i++) {
+                positions[i * 3 + 0] = (Math.random() - 0.5) * 200;
+                positions[i * 3 + 1] = (Math.random() - 0.5) * 200;
+                positions[i * 3 + 2] = (Math.random() - 0.5) * 200;
+
+                const color = Math.random() > 0.5 ? color1 : color2;
+                colors[i * 3 + 0] = color.r;
+                colors[i * 3 + 1] = color.g;
+                colors[i * 3 + 2] = color.b;
+            }
+
+            particles.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            particles.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+            
+            const particleMaterial = new THREE.PointsMaterial({
+                size: 0.8,
+                vertexColors: true,
+                blending: THREE.AdditiveBlending,
+                transparent: true,
+                opacity: 0.8
+            });
+
+            const particleMesh = new THREE.Points(particles, particleMaterial);
+            scene.add(particleMesh);
+
+            let mouseX = 0, mouseY = 0;
+            const windowHalfX = window.innerWidth / 2;
+            const windowHalfY = window.innerHeight / 2;
+
+            document.addEventListener('mousemove', onDocumentMouseMove, false);
+
+            function onDocumentMouseMove(event) {
+                mouseX = (event.clientX - windowHalfX) * 0.1;
+                mouseY = (event.clientY - windowHalfY) * 0.1;
+            }
+
+            function onWindowResize() {
+                const width = window.innerWidth;
+                const height = window.innerHeight;
+                camera.aspect = width / height;
+                camera.updateProjectionMatrix();
+                renderer.setSize(width, height);
+            }
+            window.addEventListener('resize', onWindowResize, false);
+
+            function animate() {
+                requestAnimationFrame(animate);
+
+                particleMesh.rotation.y += 0.001;
+                particleMesh.rotation.x += 0.0005;
+
+                const positions = particleMesh.geometry.attributes.position.array;
+                for (let i = 0; i < particleCount; i++) {
+                    positions[i * 3 + 0] += 0.01;
+                    if (positions[i * 3 + 0] > 100) {
+                        positions[i * 3 + 0] = -100;
+                    }
+                }
+                particleMesh.geometry.attributes.position.needsUpdate = true;
+                
+                camera.position.x += (mouseX - camera.position.x) * 0.05;
+                camera.position.y += (-mouseY - camera.position.y) * 0.05;
+                camera.lookAt(scene.position);
+                
+                renderer.render(scene, camera);
+            }
+            animate();
+        };
+
+        // === DYNAMIC TYPING EFFECT ===
+        const dynamicText = document.getElementById('dynamic-text');
+        // Corrected phrases for consistent punctuation
+        const phrases = ["build brand??", "grow business??", "build career??"];
+        let phraseIndex = 0;
+        let charIndex = 0;
+        let isTyping = true;
+
+        function type() {
+            const currentPhrase = phrases[phraseIndex];
+            if (isTyping) {
+                if (charIndex < currentPhrase.length) {
+                    dynamicText.textContent += currentPhrase.charAt(charIndex);
+                    charIndex++;
+                    setTimeout(type, 100);
+                } else {
+                    isTyping = false;
+                    setTimeout(erase, 1000);
+                }
+            }
+        }
+
+        function erase() {
+            const currentPhrase = phrases[phraseIndex];
+            if (charIndex > 0) {
+                dynamicText.textContent = currentPhrase.substring(0, charIndex - 1);
+                charIndex--;
+                setTimeout(erase, 50);
+            } else {
+                phraseIndex = (phraseIndex + 1) % phrases.length;
+                isTyping = true;
+                setTimeout(type, 500);
+            }
+        }
+        
+        type();
+        
+        // === SCROLL-BASED ANIMATION LOGIC ===
+        const scrollSpinLogo = document.getElementById('scroll-spin-logo');
+        const spinMultiplier = 0.5; // Controls the speed of the spin.
+
+        window.addEventListener('scroll', () => {
+            const scrollY = window.scrollY;
+            const rotation = scrollY * spinMultiplier;
+            scrollSpinLogo.style.transform = `rotate(${rotation}deg)`;
+        });
+    </script>
 </body>
 </html>
