@@ -431,7 +431,8 @@
         <section id="story" class="scroll-section py-20 md:py-32 px-6 md:px-8">
             <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 lg:items-center">
                 <div class="max-w-xl">
-                     <h2 class="anim-text text-4xl md:text-5xl xl:text-6xl font-bold leading-tight">Designing<br>Brands<br>Passionately.</h2>
+                     <!-- Adjusted Font Size, Removed <br>, added leading-tight -->
+                    <h2 class="anim-text text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">Designing Brands Passionately.</h2>
                 </div>
                 <div>
                     <p class="text-xl md:text-2xl mb-12 leading-relaxed text-gray-600 dark:text-gray-300">Every brand has a voice. We make sure yours is heard, felt, and never forgotten. We craft identities, shape brands, and create experiences that turn heads into handshakes.</p>
@@ -510,7 +511,8 @@
         <section id="faq" class="scroll-section py-20 md:py-32 px-6 md:px-8">
             <div class="max-w-4xl mx-auto">
                 <div class="text-center mb-16">
-                      <h2 class="anim-text text-4xl md:text-6xl font-bold leading-tight">Frequently Asked<br class="md:hidden"> Questions</h2>
+                       <!-- Adjusted Font Size & Removed forced breaks -->
+                      <h2 class="anim-text text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">Frequently Asked Questions</h2>
                 </div>
                 <div class="space-y-4" id="faq-accordion"></div>
             </div>
@@ -790,6 +792,7 @@
              if (statsGrid) {
                  document.querySelectorAll('.stat-number').forEach(numberElement => {
                      const target = parseInt(numberElement.getAttribute('data-target'));
+                     if (isNaN(target)) { console.error("Invalid data-target for stat number", numberElement); return; } // Add validation
                      let count = { val: 0 }; 
                      
                      ScrollTrigger.create({
@@ -823,7 +826,7 @@
                  ease: 'power3.out',
                  clearProps: "opacity,transform", 
                  scrollTrigger: { 
-                     trigger: "#services .grid", 
+                     trigger: "#services .grid", // Targeting the grid might be incorrect if no grid class exists
                      start: "top 80%", 
                      toggleActions: 'play none none none' 
                  }
@@ -835,10 +838,9 @@
                 scrollTrigger: { trigger: "#faq", start: "top 80%", toggleActions: 'play none none none' }
             });
 
-            // Ensure hero-logo-bg exists before animating
-            const heroLogoBg = document.querySelector('.hero-logo-bg');
-            // Remove the parallax animation for heroLogoBg as it's no longer present
-            // if (heroLogoBg) { ... } 
+            // Ensure hero-logo-bg is handled correctly (removed if not present)
+            // const heroLogoBg = document.querySelector('.hero-logo-bg');
+            // if (heroLogoBg) { ... } // Removed parallax for this element
 
             const projectsContainer = document.querySelector('.horizontal-scroll-section');
             const projectsWrapper = document.querySelector('.projects-wrapper');
