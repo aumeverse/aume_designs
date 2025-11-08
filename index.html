@@ -39,10 +39,12 @@
         }
     </script>
     
-    <!-- GSAP & Lenis Libraries (Moved to Head for earlier loading) -->
+    <!-- GSAP, ScrollTrigger, Lenis AND SplitType Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
     <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+    <!-- Added SplitType for premium text animations -->
+    <script src="https://unpkg.com/split-type"></script>
 
     <!-- Custom Styles -->
     <style>
@@ -51,6 +53,73 @@
             background-color: #FF3503;
             color: #FFFFFF;
         }
+
+        /* --- PRELOADER STYLES --- */
+        #preloader {
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #FFFFFF; /* Default light mode bg */
+            transition: opacity 0.6s ease, visibility 0.6s ease;
+        }
+        html.dark #preloader {
+            background-color: #000000; /* Dark mode bg */
+        }
+        body.loaded #preloader {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        /* Honeycomb Animation */
+        @-webkit-keyframes honeycomb {
+            0%, 20%, 80%, 100% { opacity: 0; -webkit-transform: scale(0); transform: scale(0); }
+            30%, 70% { opacity: 1; -webkit-transform: scale(1); transform: scale(1); }
+        }
+        @keyframes honeycomb {
+            0%, 20%, 80%, 100% { opacity: 0; -webkit-transform: scale(0); transform: scale(0); }
+            30%, 70% { opacity: 1; -webkit-transform: scale(1); transform: scale(1); }
+        }
+        .honeycomb {
+            height: 24px;
+            position: relative;
+            width: 24px;
+        }
+        .honeycomb div {
+            -webkit-animation: honeycomb 2.1s infinite backwards;
+            animation: honeycomb 2.1s infinite backwards;
+            background: #FF3503; /* CHANGED to brand accent color for better visibility */
+            height: 12px;
+            margin-top: 6px;
+            position: absolute;
+            width: 24px;
+        }
+        .honeycomb div:after, .honeycomb div:before {
+            content: '';
+            border-left: 12px solid transparent;
+            border-right: 12px solid transparent;
+            position: absolute;
+            left: 0;
+            right: 0;
+        }
+        .honeycomb div:after {
+            top: -6px;
+            border-bottom: 6px solid #FF3503; /* Brand accent */
+        }
+        .honeycomb div:before {
+            bottom: -6px;
+            border-top: 6px solid #FF3503; /* Brand accent */
+        }
+        .honeycomb div:nth-child(1) { -webkit-animation-delay: 0s; animation-delay: 0s; left: -28px; top: 0; }
+        .honeycomb div:nth-child(2) { -webkit-animation-delay: 0.1s; animation-delay: 0.1s; left: -14px; top: 22px; }
+        .honeycomb div:nth-child(3) { -webkit-animation-delay: 0.2s; animation-delay: 0.2s; left: 14px; top: 22px; }
+        .honeycomb div:nth-child(4) { -webkit-animation-delay: 0.3s; animation-delay: 0.3s; left: 28px; top: 0; }
+        .honeycomb div:nth-child(5) { -webkit-animation-delay: 0.4s; animation-delay: 0.4s; left: 14px; top: -22px; }
+        .honeycomb div:nth-child(6) { -webkit-animation-delay: 0.5s; animation-delay: 0.5s; left: -14px; top: -22px; }
+        .honeycomb div:nth-child(7) { -webkit-animation-delay: 0.6s; animation-delay: 0.6s; left: 0; top: 0; }
 
         /* Lenis smooth scroll styles */
         html.lenis {
@@ -85,9 +154,38 @@
             border: 1px solid #374151;
         }
 
-        /* Letter animations */
-        .anim-text { line-height: 1.1; }
-        .letter { display: inline-block; }
+        /* NEW: Magnetic Cursor Styles */
+        @media (min-width: 1024px) { /* Only show on desktop */
+            .custom-cursor {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 20px;
+                height: 20px;
+                border: 1.5px solid #FF3503; /* Brand accent border */
+                background-color: rgba(255, 53, 3, 0.1);
+                border-radius: 50%;
+                pointer-events: none;
+                z-index: 9999;
+                transform: translate(-50%, -50%);
+                transition: width 0.3s ease, height 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+                will-change: transform, width, height;
+                mix-blend-mode: difference; /* Cool effect over different backgrounds */
+            }
+            .custom-cursor.hover-active {
+                width: 60px;
+                height: 60px;
+                background-color: rgba(255, 53, 3, 0.2);
+                border-color: transparent;
+            }
+             /* Hide default cursor when custom one is active */
+            body { cursor: none; }
+            a, button, input, textarea, select, label { cursor: none !important; }
+        }
+        @media (max-width: 1023px) {
+            .custom-cursor { display: none; }
+        }
+
 
         /* Grid Background */
         .grid-background {
@@ -105,15 +203,26 @@
         #desktop-work { display: none; }
 
         .mobile-project-card {
-            position: relative;
+            position: sticky; /* CORE STICKY MECHANISM */
+            top: 110px;       /* All cards stick to the same spot under header */
+            z-index: 1;
             width: 100%;
-            /* Removed fixed height to prevent cropping. 
-               Images will maintain their natural aspect ratio. */
-            margin-bottom: 30px;
-            border-radius: 16px;
+            margin-bottom: 40px; /* Space to scroll before next one covers it */
+            border-radius: 20px;
             overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            /* Shadow now includes a negative Y offset (-10px) so the shadow appears ABOVE 
+               the card as it slides over the previous one */
+            box-shadow: 0 -10px 30px -10px rgba(0,0,0,0.2), 0 10px 30px -10px rgba(0,0,0,0.1);
+            background-color: #ffffff; /* Vital for covering previous cards */
+            will-change: transform;
         }
+        /* Dark mode background for cards */
+        .dark .mobile-project-card {
+            background-color: #121212; /* Slightly lighter than pure black for contrast */
+            box-shadow: 0 -10px 30px -10px rgba(0,0,0,0.8), 0 10px 30px -10px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        
         .mobile-project-card img {
             width: 100%;
             height: auto; /* Allows natural height */
@@ -157,10 +266,11 @@
                 margin-right: 4vw; /* Spacing between cards */
                 border-radius: 30px;
                 overflow: hidden;
-                transition: transform 0.3s ease-out;
+                transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1); /* Smoother transition */
+                cursor: none; /* For magnetic cursor */
             }
             .project-card:hover {
-                transform: scale(1.02); /* Slight hover effect */
+                transform: scale(1.03); /* Enhanced hover effect */
             }
              .project-card img {
                 width: 100%;
@@ -191,7 +301,7 @@
             width: 180px; /* Adjusted width for new text */
             position: relative;
             background-color: transparent;
-            cursor: pointer;
+            cursor: none; /* Use custom cursor */
             border: 2px solid #000000;
             overflow: hidden;
             border-radius: 30px;
@@ -274,7 +384,7 @@
         /* Animated Toggle Styles */
         .switch { position: relative; display: inline-block; width: 60px; height: 34px; }
         .switch #input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #2196f3; -webkit-transition: 0.4s; transition: 0.4s; z-index: 0; overflow: hidden; }
+        .slider { position: absolute; cursor: none; top: 0; left: 0; right: 0; bottom: 0; background-color: #2196f3; -webkit-transition: 0.4s; transition: 0.4s; z-index: 0; overflow: hidden; }
         .sun-moon { position: absolute; content: ""; height: 26px; width: 26px; left: 4px; bottom: 4px; background-color: yellow; -webkit-transition: 0.4s; transition: 0.4s; }
         #input:checked + .slider { background-color: black; }
         #input:focus + .slider { box-shadow: 0 0 1px #2196f3; }
@@ -301,7 +411,7 @@
         /* FAQ Section Styles */
         .faq-item { border-bottom: 1px solid; border-color: rgba(0,0,0,0.1); }
         .dark .faq-item { border-color: rgba(255,255,255,0.1); }
-        .faq-question { cursor: pointer; display: flex; justify-content: space-between; align-items: flex-start; padding: 1.5rem 0; gap: 1rem; }
+        .faq-question { cursor: none; display: flex; justify-content: space-between; align-items: flex-start; padding: 1.5rem 0; gap: 1rem; } /* Cursor none for Magnetic */
         .faq-question h3 { flex: 1; word-break: break-word; }
         .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.5s ease-out; }
         .faq-answer p { padding-bottom: 1.5rem; line-height: 1.7; }
@@ -423,7 +533,7 @@
         .form-field textarea { resize: vertical; min-height: 120px; }
         
         .checkbox-group .checkbox-options { display: flex; flex-wrap: wrap; gap: 15px; margin-top: 10px; }
-        .checkbox-options label { display: flex; align-items: center; font-weight: normal; cursor: pointer; }
+        .checkbox-options label { display: flex; align-items: center; font-weight: normal; cursor: none; }
         .dark .checkbox-options label { color: #ffffff; } /* Dark mode radio label */
         .checkbox-options input[type="radio"] { width: auto; margin-right: 8px; accent-color: #9B5DE5; }
 
@@ -431,7 +541,7 @@
         .submit-inquiry-btn {
             padding: 16px 48px; background: linear-gradient(135deg, #9B5DE5, #00D9FF);
             border: none; border-radius: 50px; color: #ffffff; font-size: 1.1rem;
-            font-weight: 700; cursor: pointer; display: inline-flex; align-items: center;
+            font-weight: 700; cursor: none; display: inline-flex; align-items: center;
             gap: 10px; transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
             box-shadow: 0 8px 25px rgba(155, 93, 229, 0.4);
         }
@@ -447,6 +557,22 @@
         .error-message { background: rgba(239, 68, 68, 0.2); border: 2px solid #ef4444; color: #ef4444; }
         .form-message.show { display: block; animation: slideDown 0.5s ease; }
 
+        /* --- Header Scroll Effect --- */
+        header {
+            transition: background-color 0.3s ease, backdrop-filter 0.3s ease, padding 0.3s ease;
+        }
+        header.scrolled {
+            background-color: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            padding-top: 1rem !important;
+            padding-bottom: 1rem !important;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+        html.dark header.scrolled {
+            background-color: rgba(0, 0, 0, 0.75);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
         @media (max-width: 768px) {
             .contact-modal-container { padding: 30px 20px; margin: 10px; }
             .modal-header h2 { font-size: 1.8rem; }
@@ -456,16 +582,34 @@
         }
         @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* Split Type Line handling for premium text reveals */
+        .line { overflow: hidden; }
     </style>
     
 </head>
-<body class="bg-brand-white dark:bg-brand-black text-brand-black dark:text-brand-white font-sans antialiased overflow-x-hidden preload">
+<body class="bg-brand-white dark:bg-brand-black text-brand-black dark:text-brand-white font-sans antialiased overflow-x-hidden">
 
-    <div id="custom-cursor" class="hidden lg:block fixed w-3 h-3 bg-brand-accent rounded-full pointer-events-none z-50"></div>
+    <!-- PRELOADER -->
+    <div id="preloader">
+        <div class="honeycomb">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+
+    <!-- Custom Magnetic Cursor Element -->
+    <div class="custom-cursor"></div>
+    <!-- Separate Dot for precise pointing -->
+    <div class="custom-cursor-dot fixed top-0 left-0 w-1.5 h-1.5 bg-brand-accent rounded-full pointer-events-none z-[10000] hidden lg:block mix-blend-difference"></div>
 
     <!-- MOVED: Theme Toggle is now fixed at the bottom right -->
     <div class="fixed bottom-6 right-6 z-50 scale-90 md:scale-100 origin-bottom-right">
-        <label class="switch">
+        <label class="switch magnetic-target">
             <input id="input" type="checkbox" />
             <div class="slider round">
                 <div class="sun-moon">
@@ -492,10 +636,10 @@
     <header class="fixed top-0 left-0 right-0 z-40 p-6 md:p-8 flex justify-end items-center">
         <div class="flex items-center gap-4">
             <!-- Theme Toggle Removed from here -->
-             <!-- Updated Button with ID -->
-            <button class="connect-button type1 hidden md:block" id="openContactModal"><span class="btn-txt">Let's Connect</span></button>
+             <!-- Updated Button with CLASS instead of ID for multiple triggers -->
+            <button class="connect-button open-contact-modal type1 hidden md:block magnetic-target"><span class="btn-txt">Let's Connect</span></button>
             <!-- Increased padding (p-4) for better touch target to prevent glitches -->
-            <button id="menu-button" class="z-50 p-4 -mr-2" aria-label="Open menu">
+            <button id="menu-button" class="z-50 p-4 -mr-2 magnetic-target" aria-label="Open menu">
                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
             </button>
         </div>
@@ -505,12 +649,12 @@
         <div class="p-8 h-full flex flex-col justify-between">
             <nav>
                 <ul class="text-3xl md:text-4xl font-bold space-y-6 pt-20">
-                    <li class="overflow-hidden"><a href="#story" class="menu-item inline-block">Our Story</a></li>
-                    <li class="overflow-hidden"><a href="#work" class="menu-item inline-block">Our Work</a></li>
-                    <li class="overflow-hidden"><a href="#services" class="menu-item inline-block">What We Do</a></li>
-                    <li class="overflow-hidden"><a href="#faq" class="menu-item inline-block">FAQs</a></li>
-                    <li class="overflow-hidden"><a href="#" class="menu-item inline-block">Insights</a></li>
-                    <li class="overflow-hidden"><a href="#contact" class="menu-item inline-block">Get in Touch</a></li>
+                    <li class="overflow-hidden"><a href="#story" class="menu-item inline-block magnetic-target">Our Story</a></li>
+                    <li class="overflow-hidden"><a href="#work" class="menu-item inline-block magnetic-target">Our Work</a></li>
+                    <li class="overflow-hidden"><a href="#services" class="menu-item inline-block magnetic-target">What We Do</a></li>
+                    <li class="overflow-hidden"><a href="#faq" class="menu-item inline-block magnetic-target">FAQs</a></li>
+                    <li class="overflow-hidden"><a href="#" class="menu-item inline-block magnetic-target">Insights</a></li>
+                    <li class="overflow-hidden"><a href="#contact" class="menu-item inline-block magnetic-target">Get in Touch</a></li>
                 </ul>
             </nav>
             <div class="space-y-8 pb-8">
@@ -530,19 +674,19 @@
                     <img src="https://i.ibb.co/JRCQyPdG/Untitled-2-01.png" alt="Aumedesign Brand Logo" class="hero-logo-dark">
                     <img src="https://i.ibb.co/G4FSVD5T/Untitled-2-03.png" alt="Aumedesign Brand Logo" class="hero-logo-light">
                 </div>
-                <p class="text-xl md:text-3xl font-light tracking-wider -mt-8 md:-mt-16 lg:-mt-24 hero-subline text-gray-600 dark:text-gray-300">We're a creative powerhouse building brands that matter.</p>
+                <p class="text-xl md:text-3xl font-light tracking-wider -mt-8 md:-mt-16 lg:-mt-24 hero-subline text-gray-600 dark:text-gray-300 anim-text-reveal">We're a creative powerhouse building brands that matter.</p>
             </div>
             <div class="absolute bottom-8 text-center text-gray-500 dark:text-gray-400 text-sm hero-scroll"><p>↓ Scroll to explore</p></div>
         </section>
 
-        <section id="story" class="scroll-section py-20 md:py-32 px-6 md:px-8">
+        <section id="story" class="scroll-section fade-up-section py-20 md:py-32 px-6 md:px-8">
             <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 lg:items-center">
                 <div class="max-w-xl">
                      <!-- Adjusted Font Size, Removed <br>, added leading-tight -->
                     <h2 class="anim-text text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">Designing Brands Passionately.</h2>
                 </div>
                 <div>
-                    <p class="text-xl md:text-2xl mb-12 leading-relaxed text-gray-600 dark:text-gray-300">Every brand has a voice. We make sure yours is heard, felt, and never forgotten. We craft identities, shape brands, and create experiences that turn heads into handshakes.</p>
+                    <p class="text-xl md:text-2xl mb-12 leading-relaxed text-gray-600 dark:text-gray-300 anim-text-reveal">Every brand has a voice. We make sure yours is heard, felt, and never forgotten. We craft identities, shape brands, and create experiences that turn heads into handshakes.</p>
                     <div class="grid grid-cols-2 gap-8 text-center" id="stats-grid">
                         <div>
                             <p class="stat-number text-5xl md:text-6xl font-bold text-brand-accent" data-target="50">0+</p>
@@ -561,7 +705,7 @@
                             <p class="text-gray-500 dark:text-gray-400 mt-2">Years of Excellence</p>
                         </div>
                     </div>
-                    <a href="#" class="inline-block mt-12 text-lg font-medium border-b border-black dark:border-brand-white pb-1 hover:border-brand-accent transition">Discover More →</a>
+                    <!-- Discover More link removed here as requested -->
                 </div>
             </div>
         </section>
@@ -569,28 +713,28 @@
         <!-- DESKTOP PORTFOLIO (Horizontal Scroll - RESTORED) -->
         <section id="desktop-work" class="horizontal-scroll-section bg-white dark:bg-brand-black">
             <div class="projects-wrapper">
-                 <div class="project-card">
+                 <div class="project-card magnetic-target">
                     <img src="https://i.ibb.co/200vLrGK/acd8a5233876973-68b82584d38f6.webp" alt="Roja-luxury perfume Project">
                     <div class="project-card-content">
                         <h3>Roja - Luxury Perfume</h3>
                         <p>Brand Identity • 2025</p>
                     </div>
                 </div>
-                <div class="project-card">
+                <div class="project-card magnetic-target">
                     <img src="https://i.ibb.co/RkpkQQ8h/b04596230224489-6873355ea45b5.webp" alt="SHOR / CLOTHING BRAND Project">
                     <div class="project-card-content">
                         <h3>SHOR / CLOTHING BRAND</h3>
                         <p>Packaging Design • 2025</p>
                     </div>
                 </div>
-                <div class="project-card">
+                <div class="project-card magnetic-target">
                      <img src="https://i.ibb.co/NdLTrhwm/68c05a230186811-687240b3ae895.webp" alt="Chokha Brand Identity Project">
                      <div class="project-card-content">
                         <h3>Chokha Brand Identity</h3>
                         <p>Complete Branding • 2025</p>
                      </div>
                 </div>
-                <div class="project-card">
+                <div class="project-card magnetic-target">
                      <img src="https://i.ibb.co/DPBqwV6D/a98078233165195-68aa9aff9ea2e.webp" alt="GREEEN Project">
                      <div class="project-card-content">
                         <h3>GREEEN</h3>
@@ -663,7 +807,7 @@
             </div>
         </section>
 
-        <section id="faq" class="scroll-section py-20 md:py-32 px-6 md:px-8">
+        <section id="faq" class="scroll-section fade-up-section py-20 md:py-32 px-6 md:px-8">
             <div class="max-w-4xl mx-auto">
                 <div class="text-center mb-16">
                        <!-- Adjusted Font Size & Removed forced breaks -->
@@ -673,18 +817,19 @@
             </div>
         </section>
 
-        <section class="scroll-section py-20 md:py-40 px-6 md:px-8 bg-gray-100 dark:bg-brand-gray text-center grid-background">
+        <section class="scroll-section fade-up-section py-20 md:py-40 px-6 md:px-8 bg-gray-100 dark:bg-brand-gray text-center grid-background">
             <h2 class="anim-text text-6xl md:text-8xl lg:text-9xl font-bold leading-tight">Ready to Make Your Mark?</h2>
-            <button class="cta-button mt-12 bg-brand-accent text-brand-white h-[60px] px-12 text-lg font-medium rounded-md">Let's Get Started →</button>
+            <!-- Added 'open-contact-modal' class here to trigger the form -->
+            <button class="cta-button open-contact-modal mt-12 bg-brand-accent text-brand-white h-[60px] px-12 text-lg font-medium rounded-md magnetic-target">Let's Get Started →</button>
         </section>
     </main>
 
     <footer id="contact" class="scroll-section bg-gray-100 dark:bg-brand-black py-20 px-6 md:px-8">
         <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 text-gray-500 dark:text-gray-400">
             <div><h3 class="text-2xl font-medium text-black dark:text-white mb-4">Aumedesign</h3><p>Design Beyond Boundaries</p></div>
-            <div><h4 class="font-bold text-black dark:text-white mb-4">Services</h4><ul class="space-y-2"><li><a href="#services" class="hover:text-black dark:hover:text-white transition">Logo Design</a></li><li><a href="#services" class="hover:text-black dark:hover:text-white transition">Brand Identity</a></li><li><a href="#services" class="hover:text-black dark:hover:text-white transition">Packaging Design</a></li><li><a href="#services" class="hover:text-black dark:hover:text-white transition">Website Development</a></li></ul></div>
-            <div><h4 class="font-bold text-black dark:text-white mb-4">Company</h4><ul class="space-y-2"><li><a href="#story" class="hover:text-black dark:hover:text-white transition">Our Story</a></li><li><a href="#work" class="hover:text-black dark:hover:text-white transition">Our Work</a></li><li><a href="#services" class="hover:text-black dark:hover:text-white transition">What We Do</a></li><li><a href="#" class="hover:text-black dark:hover:text-white transition">Insights</a></li><li><a href="#contact" class="hover:text-black dark:hover:text-white transition">Get in Touch</a></li></ul></div>
-            <div><h4 class="font-bold text-black dark:text-white mb-4">Connect</h4><ul class="space-y-2"><li><a href="mailto:hello@aumedesign.com" class="hover:text-black dark:hover:text-white transition">hello@aumedesign.com</a></li><li><a href="tel:+919372998318" class="hover:text-black dark:hover:text-white transition">+91 9372998318</a></li><li><a href="#" class="hover:text-black dark:hover:text-white transition flex items-center group">Instagram <svg class="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg></a></li><li><a href="#" class="hover:text-black dark:hover:text-white transition flex items-center group">LinkedIn <svg class="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg></a></li></ul></div>
+            <div><h4 class="font-bold text-black dark:text-white mb-4">Services</h4><ul class="space-y-2"><li><a href="#services" class="hover:text-black dark:hover:text-white transition magnetic-target inline-block">Logo Design</a></li><li><a href="#services" class="hover:text-black dark:hover:text-white transition magnetic-target inline-block">Brand Identity</a></li><li><a href="#services" class="hover:text-black dark:hover:text-white transition magnetic-target inline-block">Packaging Design</a></li><li><a href="#services" class="hover:text-black dark:hover:text-white transition magnetic-target inline-block">Website Development</a></li></ul></div>
+            <div><h4 class="font-bold text-black dark:text-white mb-4">Company</h4><ul class="space-y-2"><li><a href="#story" class="hover:text-black dark:hover:text-white transition magnetic-target inline-block">Our Story</a></li><li><a href="#work" class="hover:text-black dark:hover:text-white transition magnetic-target inline-block">Our Work</a></li><li><a href="#services" class="hover:text-black dark:hover:text-white transition magnetic-target inline-block">What We Do</a></li><li><a href="#" class="hover:text-black dark:hover:text-white transition magnetic-target inline-block">Insights</a></li><li><a href="#contact" class="hover:text-black dark:hover:text-white transition magnetic-target inline-block">Get in Touch</a></li></ul></div>
+            <div><h4 class="font-bold text-black dark:text-white mb-4">Connect</h4><ul class="space-y-2"><li><a href="mailto:hello@aumedesign.com" class="hover:text-black dark:hover:text-white transition magnetic-target inline-block">hello@aumedesign.com</a></li><li><a href="tel:+919372998318" class="hover:text-black dark:hover:text-white transition magnetic-target inline-block">+91 9372998318</a></li><li><a href="#" class="hover:text-black dark:hover:text-white transition flex items-center group magnetic-target inline-flex">Instagram <svg class="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg></a></li><li><a href="#" class="hover:text-black dark:hover:text-white transition flex items-center group magnetic-target inline-flex">LinkedIn <svg class="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg></a></li></ul></div>
         </div>
         <div class="max-w-7xl mx-auto border-t border-gray-200 dark:border-white/10 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-gray-600 dark:text-gray-500">
             <p>&copy; 2025 Aumedesign. All rights reserved.</p>
@@ -695,7 +840,7 @@
     <!-- Contact Modal -->
     <div class="contact-modal-overlay" id="contactModal">
         <div class="contact-modal-container">
-            <button class="close-modal-btn" id="closeModal">&times;</button>
+            <button class="close-modal-btn magnetic-target" id="closeModal">&times;</button>
             <div class="modal-header">
                 <h2>Let's Create Something Amazing</h2>
                 <p>Tell us about your project and we'll bring your vision to life</p>
@@ -736,12 +881,12 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // Ensure GSAP and ScrollTrigger are loaded before registering the plugin
-            if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
-                gsap.registerPlugin(ScrollTrigger);
+            // Ensure libraries are loaded
+            if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined' || typeof SplitType === 'undefined') {
+                console.error("Critical animation libraries missing");
+                // Continue anyway to not break basic functionality
             } else {
-                console.error("GSAP or ScrollTrigger not loaded");
-                // return; // Don't stop script if libraries are missing
+                gsap.registerPlugin(ScrollTrigger);
             }
             
             // --- Theme Toggle ---
@@ -759,17 +904,16 @@
                     applyTheme(isDarkMode);
                     localStorage.setItem('darkMode', JSON.stringify(isDarkMode));
                 });
-           } else {
-               console.error("Theme toggle input not found");
            }
 
-            // --- Remove Preload Class ---
+            // --- Remove Preloader Class ---
+            // Increased timeout to 3000ms (3 seconds) as requested
              setTimeout(() => {
-                 document.body.classList.remove('preload');
-             }, 100); 
+                 document.body.classList.add('loaded');
+                 // Start entrance animations only after preloader begins fading out
+                 initializeEntranceAnimations(); 
+             }, 3000); 
             
-            animateHeroContent(); // Call hero animation after removing preload
-
             // --- Lenis Smooth Scrolling ---
             let lenis; 
             if (typeof Lenis !== 'undefined') {
@@ -779,57 +923,116 @@
                  lenis.on('scroll', () => ScrollTrigger.update()); 
                  gsap.ticker.add((time) => { lenis.raf(time * 1000); });
                  gsap.ticker.lagSmoothing(0);
-            } else {
-                console.error("Lenis library not loaded");
             }
-            
-            // --- Custom Cursor ---
-            const cursor = document.getElementById('custom-cursor');
-            if (cursor && !/Mobi|Android/i.test(navigator.userAgent)) { 
-                window.addEventListener('mousemove', e => { gsap.to(cursor, { x: e.clientX, y: e.clientY, duration: 0.5, ease: 'power2.out' }); });
-                document.querySelectorAll('a, button, .group').forEach(el => {
-                    el.addEventListener('mouseenter', () => gsap.to(cursor, { scale: 2.5, duration: 0.3 }));
-                    el.addEventListener('mouseleave', () => gsap.to(cursor, { scale: 1, duration: 0.3 }));
+
+            // --- PREMIUM MAGNETIC CURSOR ---
+            if (window.innerWidth >= 1024) { // Desktop only
+                const cursor = document.querySelector('.custom-cursor');
+                const cursorDot = document.querySelector('.custom-cursor-dot');
+                const targets = document.querySelectorAll('.magnetic-target, a, button, input[type="checkbox"] + .slider');
+                
+                // Use GSAP quickTo for higher performance mouse following
+                const xTo = gsap.quickTo(cursor, "left", {duration: 0.4, ease: "power3.out"});
+                const yTo = gsap.quickTo(cursor, "top", {duration: 0.4, ease: "power3.out"});
+                const xToDot = gsap.quickTo(cursorDot, "left", {duration: 0.1, ease: "none"}); // Dot is faster
+                const yToDot = gsap.quickTo(cursorDot, "top", {duration: 0.1, ease: "none"});
+
+                window.addEventListener('mousemove', e => {
+                    xTo(e.clientX); yTo(e.clientY);
+                    xToDot(e.clientX); yToDot(e.clientY);
                 });
-            } else if (cursor) {
-                cursor.style.display = 'none'; 
+
+                targets.forEach(target => {
+                    target.addEventListener('mouseenter', () => {
+                        cursor.classList.add('hover-active');
+                        // Optional: Magnets sticking to elements (simplified here to just scaling)
+                    });
+                    target.addEventListener('mouseleave', () => {
+                        cursor.classList.remove('hover-active');
+                    });
+                });
+                
+                // Ensure cursor disappears when leaving window
+                document.addEventListener('mouseleave', () => {
+                    gsap.to([cursor, cursorDot], {opacity: 0, duration: 0.3});
+                });
+                 document.addEventListener('mouseenter', () => {
+                    gsap.to([cursor, cursorDot], {opacity: 1, duration: 0.3});
+                });
             }
 
+            // --- Header Scroll Effect (Frosted Glass) ---
+            const header = document.querySelector('header');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
+            });
 
-            // --- Mobile Menu ---
+            // --- INITIALIZATION WRAPPER FOR ANIMATIONS ---
+            function initializeEntranceAnimations() {
+                // 1. Hero Animations
+                gsap.from('.hero-headline', { y: 100, opacity: 0, duration: 1.2, ease: 'power4.out' });
+                gsap.from(['.hero-subline', '.hero-scroll'], { y: 40, opacity: 0, stagger: 0.2, duration: 1.2, ease: 'power3.out', delay: 0.4 });
+
+                // 2. Premium Text Reveals (SplitType) - UPDATED for Enter/Exit
+                if (typeof SplitType !== 'undefined') {
+                    const splitTexts = document.querySelectorAll('.anim-text');
+                    splitTexts.forEach(text => {
+                        // Split into lines first, then chars to prevent word breaking issues
+                        const split = new SplitType(text, { types: 'lines, chars', lineClass: 'line' });
+                        
+                        gsap.from(split.chars, {
+                            scrollTrigger: {
+                                trigger: text,
+                                start: 'top 90%', // Start animating when top of text hits 90% of viewport height
+                                end: 'bottom 10%', // End animating out when bottom of text hits 10% of viewport height
+                                toggleActions: 'play reverse play reverse' // Play on enter, reverse on leave, play on enter back, reverse on leave back
+                            },
+                            y: 50,
+                            opacity: 0,
+                            stagger: 0.01, // Slightly faster stagger for smoother exit/re-entry
+                            duration: 0.6,
+                            ease: 'power2.out'
+                        });
+                    });
+                }
+
+                // 3. General Fade Up Sections (excluding portfolio)
+                gsap.utils.toArray('.fade-up-section').forEach(section => {
+                     gsap.from(section, {
+                        opacity: 0, y: 60, duration: 1, ease: 'power3.out',
+                        scrollTrigger: { trigger: section, start: 'top 85%', toggleActions: 'play none none none' }
+                    });
+                });
+            }
+
+            // --- EXISTING FEATURES PRESERVED BELOW ---
+
+            // Mobile Menu
             const menuButton = document.getElementById('menu-button');
             const menuPanel = document.getElementById('menu-panel');
             const menuOverlay = document.getElementById('menu-overlay');
-            
-            // Animation Guard to prevent glitches on rapid clicks
             let isMenuAnimating = false;
 
             const toggleMenu = () => {
                 if (!menuPanel || !menuOverlay || isMenuAnimating) return; 
-                
-                isMenuAnimating = true; // Lock animation
+                isMenuAnimating = true; 
                 const isOpen = menuPanel.classList.contains('translate-x-0');
                 
                 if (!isOpen) {
                     menuPanel.classList.remove('translate-x-full'); menuPanel.classList.add('translate-x-0');
                     menuOverlay.classList.remove('hidden');
-                    gsap.to(menuOverlay, { 
-                        opacity: 1, 
-                        duration: 0.5 
-                    });
+                    gsap.to(menuOverlay, { opacity: 1, duration: 0.5 });
                     if (typeof lenis !== 'undefined') lenis.stop(); 
-                    gsap.fromTo('.menu-item', 
-                        { y: '100%', opacity: 0 }, 
-                        { y: '0%', opacity: 1, duration: 0.6, stagger: 0.05, ease: 'power3.out', delay: 0.3, 
-                          onComplete: () => isMenuAnimating = false // Unlock when done
-                        }
-                    );
+                    gsap.fromTo('.menu-item', { y: '100%', opacity: 0 }, { y: '0%', opacity: 1, duration: 0.6, stagger: 0.05, ease: 'power3.out', delay: 0.3, onComplete: () => isMenuAnimating = false });
                 } else {
                     gsap.to(menuPanel, { x: '100%', duration: 0.7, ease: 'power3.inOut', onComplete: () => {
                         menuPanel.classList.add('translate-x-full'); menuPanel.classList.remove('translate-x-0');
-                         // Reset transform after GSAP to ensure class-based toggling works next time
                         gsap.set(menuPanel, { clearProps: "x" });
-                        isMenuAnimating = false; // Unlock when done
+                        isMenuAnimating = false; 
                     }});
                     gsap.to(menuOverlay, { opacity: 0, duration: 0.5, onComplete: () => menuOverlay.classList.add('hidden') });
                     if (typeof lenis !== 'undefined') lenis.start(); 
@@ -842,30 +1045,21 @@
                 menuPanel.querySelectorAll('a').forEach(link => {
                     link.addEventListener('click', (e) => {
                         const href = link.getAttribute('href');
-                        // If it is a hash link
                         if (href && href.startsWith('#')) {
                             e.preventDefault();
-                            // If it's an actual ID (length > 1), try to scroll to it
                             if (href.length > 1) {
                                 const targetElement = document.querySelector(href);
-                                if (targetElement) {
-                                    if (typeof lenis !== 'undefined') lenis.scrollTo(targetElement);
-                                } else {
-                                     console.warn(`Anchor target ${href} not found`);
-                                }
+                                if (targetElement && typeof lenis !== 'undefined') lenis.scrollTo(targetElement);
                             }
-                            // Always close menu if it's open when a hash link is clicked
                             if (menuPanel.classList.contains('translate-x-0')) { toggleMenu(); }
                         } else {
-                             // Regular link, just close menu
                              if (menuPanel.classList.contains('translate-x-0')) { toggleMenu(); }
                         }
                     });
                 });
             }
 
-
-            // --- FAQ Accordion ---
+            // FAQ Accordion
             const faqData = [
                 { q: "What's included in a logo design project?", a: "You get multiple logo concepts to choose from, a couple rounds of revisions, and all the final files in every format you'll ever need. PNG, SVG, PDF, the works. We also throw in a quick brand guidelines doc so you know how to use your logo correctly." },
                 { q: "What kind of websites do you build?", a: "Portfolio sites, business websites, landing pages, e-commerce stores, basically anything you need online. We keep them fast, clean, and mobile friendly. If you can dream it, we can probably build it." },
@@ -882,7 +1076,7 @@
             if (accordionContainer) {
                 faqData.forEach(item => {
                     const faqItem = document.createElement('div');
-                    faqItem.className = 'faq-item';
+                    faqItem.className = 'faq-item magnetic-target'; // Make FAQs magnetic too
                     faqItem.innerHTML = `
                         <div class="faq-question">
                             <h3 class="text-xl md:text-2xl font-medium">${item.q}</h3>
@@ -911,12 +1105,9 @@
                         answer.style.maxHeight = 0;
                     }
                 });
-            } else {
-                console.error("FAQ Accordion container not found");
             }
 
-
-            // --- 3D Hero Animation ---
+            // 3D Hero Animation
             const heroImageContainer = document.querySelector('.hero-image-container');
             if(heroImageContainer) {
                 const heroHeadlines = heroImageContainer.querySelectorAll('.hero-headline');
@@ -931,179 +1122,75 @@
                 });
             }
 
-            // --- Core Animations ---
-            function animateHeroContent() {
-                gsap.from('.hero-headline', { y: 100, opacity: 0, duration: 1, ease: 'power3.out', delay: 0.2 });
-                gsap.from(['.hero-subline', '.hero-scroll'], { y: 40, opacity: 0, stagger: 0.15, duration: 1.2, ease: 'power3.out', delay: 0.5 });
-            }
-            
-            document.querySelectorAll('.scroll-section').forEach(section => {
-                 gsap.fromTo(section, { opacity: 0, y: 80 }, {
-                    opacity: 1, y: 0, duration: 1.2, ease: 'power3.out',
-                    scrollTrigger: { trigger: section, start: 'top 85%', toggleActions: 'play none none none' }
-                });
-            });
-
-            // UPDATED: Text splitting that keeps words together
-            document.querySelectorAll('.anim-text').forEach(textBlock => {
-                let letters;
-                if(!textBlock.dataset.split) {
-                    textBlock.innerHTML = textBlock.innerText.split(/(\s+)/).filter(Boolean).map(part => { 
-                         // If it's whitespace, keep it as is for natural spacing
-                         if (/^\s+$/.test(part)) return part;
-                         // Wrap WHOLE word in a no-wrap span, then split into letters
-                         return `<span class="inline-block whitespace-nowrap">` + 
-                                part.split('').map(char => `<span class="letter inline-block">${char}</span>`).join('') + 
-                                `</span>`;
-                     }).join('');
-                    textBlock.dataset.split = true;
-                    letters = textBlock.querySelectorAll('.letter'); 
-                } else {
-                    letters = textBlock.querySelectorAll('.letter');
-                }
-
-                if (letters && letters.length > 0) {
-                     gsap.fromTo(letters, { y: 80, opacity: 0, }, { y: 0, opacity: 1, stagger: 0.02, ease: 'power2.out', scrollTrigger: { trigger: textBlock, start: 'top 85%', end: 'bottom 60%', scrub: 1 } });
-                } else {
-                     gsap.fromTo(textBlock, { y: 80, opacity: 0, }, { y: 0, opacity: 1, ease: 'power2.out', scrollTrigger: { trigger: textBlock, start: 'top 85%', end: 'bottom 60%', scrub: 1 } });
-                }
-            });
-            
-             // --- Number Counting Animation ---
+             // Number Counting Animation
              const statsGrid = document.getElementById('stats-grid');
              if (statsGrid) {
                  document.querySelectorAll('.stat-number').forEach(numberElement => {
                      const target = parseInt(numberElement.getAttribute('data-target'));
-                     if (isNaN(target)) { console.error("Invalid data-target for stat number", numberElement); return; } // Add validation
-                     let count = { val: 0 }; 
-                     
-                     ScrollTrigger.create({
-                        trigger: statsGrid,
-                        start: 'top 85%',
-                        toggleActions: 'play none none none',
-                        onEnter: () => {
-                            gsap.to(count, {
-                                val: target,
-                                duration: 2.5,
-                                ease: 'power1.out',
-                                onUpdate: () => {
-                                    numberElement.innerText = Math.round(count.val) + '+';
-                                }
-                            });
-                        }
-                     });
+                     if (!isNaN(target)) {
+                         let count = { val: 0 }; 
+                         ScrollTrigger.create({
+                            trigger: statsGrid, start: 'top 85%', toggleActions: 'play none none none',
+                            onEnter: () => {
+                                gsap.to(count, { val: target, duration: 2.5, ease: 'power1.out', onUpdate: () => { numberElement.innerText = Math.round(count.val) + '+'; } });
+                            }
+                         });
+                     }
                  });
-             } else {
-                 console.warn("Stats grid not found");
              }
 
-
-            // Service Card Scroll Trigger Animation (Entrance Only - Fixed)
-             gsap.from(".service-card", {
-                 // opacity: 0, // Keep this commented out or removed
-                 y: 70, 
-                 scale: 0.95, 
-                 duration: 1, 
+             // Service Cards Animations - UPDATED TO BE STATIC (Simple one-time fade up)
+             gsap.from('.service-card', { 
+                 y: 50, 
+                 opacity: 0, 
+                 duration: 0.8, 
                  stagger: 0.15, 
-                 ease: 'power3.out',
-                 clearProps: "opacity,transform", 
+                 ease: 'power2.out',
                  scrollTrigger: { 
-                     trigger: "#services .grid", // Targeting the grid might be incorrect if no grid class exists
-                     start: "top 80%", 
-                     toggleActions: 'play none none none' 
-                 }
+                     trigger: '#services .grid', 
+                     start: 'top 85%', 
+                     toggleActions: 'play none none none' // Only plays once
+                 } 
              });
 
+            gsap.from(".faq-item", { opacity: 0, y: 40, duration: 0.8, stagger: 0.1, ease: 'power3.out', scrollTrigger: { trigger: "#faq", start: "top 80%", toggleActions: 'play none none none' } });
 
-            gsap.from(".faq-item", {
-                opacity: 0, y: 40, duration: 0.8, stagger: 0.1, ease: 'power3.out',
-                scrollTrigger: { trigger: "#faq", start: "top 80%", toggleActions: 'play none none none' }
-            });
-
-            // Restore Horizontal Scroll for Desktop
+            // Desktop Portfolio (Horizontal)
             const projectsContainer = document.getElementById('desktop-work');
             const projectsWrapper = projectsContainer ? projectsContainer.querySelector('.projects-wrapper') : null;
-            
             if (projectsContainer && projectsWrapper) {
-                // Signal that CSS can make it visible now
                 projectsContainer.classList.add('loaded');
-                
                 ScrollTrigger.matchMedia({
                     "(min-width: 768px)": function() {
-                        gsap.to(projectsWrapper, {
-                            x: () => -(projectsWrapper.scrollWidth - projectsContainer.offsetWidth),
-                            ease: 'none',
-                            scrollTrigger: {
-                                trigger: projectsContainer, 
-                                start: 'top top',
-                                end: () => "+=" + (projectsWrapper.scrollWidth - projectsContainer.offsetWidth),
-                                scrub: 1, 
-                                pin: true, 
-                                anticipatePin: 1, 
-                                invalidateOnRefresh: true
-                            }
-                        });
+                        gsap.to(projectsWrapper, { x: () => -(projectsWrapper.scrollWidth - projectsContainer.offsetWidth), ease: 'none', scrollTrigger: { trigger: projectsContainer, start: 'top top', end: () => "+=" + (projectsWrapper.scrollWidth - projectsContainer.offsetWidth), scrub: 1, pin: true, anticipatePin: 1, invalidateOnRefresh: true } });
                     }
                 });
             }
             
-            // Mobile Portfolio Animation (Simple Fade Up)
+            // Mobile Portfolio (Vertical Stack)
             ScrollTrigger.matchMedia({
                 "(max-width: 767px)": function() {
                     gsap.utils.toArray(".mobile-project-card").forEach(card => {
-                        gsap.from(card, {
-                            opacity: 0,
-                            y: 50,
-                            duration: 0.8,
-                            ease: "power2.out",
-                            scrollTrigger: {
-                                trigger: card,
-                                start: "top 85%",
-                                toggleActions: "play none none reverse"
-                            }
-                        });
+                        gsap.from(card, { opacity: 0, y: 50, duration: 0.8, ease: "power2.out", scrollTrigger: { trigger: card, start: "top 85%", toggleActions: "play none none reverse" } });
                     });
                 }
             });
 
-             // --- Contact Modal Logic ---
-            const openModalBtn = document.getElementById('openContactModal');
+             // Contact Modal Logic
+            const openModalBtns = document.querySelectorAll('.open-contact-modal');
             const closeModalBtn = document.getElementById('closeModal');
             const modalOverlay = document.getElementById('contactModal');
             const designForm = document.getElementById('designInquiryForm');
 
-            if (openModalBtn && modalOverlay && closeModalBtn && designForm) {
-                // Open modal
-                openModalBtn.addEventListener('click', () => {
-                    modalOverlay.classList.add('active');
-                    if (typeof lenis !== 'undefined') lenis.stop(); 
-                    document.body.style.overflow = 'hidden'; 
-                });
-
-                // Close modal function
-                const closeModal = () => {
-                    modalOverlay.classList.remove('active');
-                    if (typeof lenis !== 'undefined') lenis.start(); 
-                    document.body.style.overflow = '';
-                };
-
-                // Close button
+            if (modalOverlay && closeModalBtn && designForm) {
+                openModalBtns.forEach(btn => { btn.addEventListener('click', () => { modalOverlay.classList.add('active'); if (typeof lenis !== 'undefined') lenis.stop(); document.body.style.overflow = 'hidden'; }); });
+                const closeModal = () => { modalOverlay.classList.remove('active'); if (typeof lenis !== 'undefined') lenis.start(); document.body.style.overflow = ''; };
                 closeModalBtn.addEventListener('click', closeModal);
+                modalOverlay.addEventListener('click', (e) => { if (e.target === modalOverlay) { closeModal(); } });
+                document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && modalOverlay.classList.contains('active')) { closeModal(); } });
 
-                // Close on overlay click
-                modalOverlay.addEventListener('click', (e) => {
-                    if (e.target === modalOverlay) { closeModal(); }
-                });
-
-                // Close on ESC key
-                document.addEventListener('keydown', (e) => {
-                    if (e.key === 'Escape' && modalOverlay.classList.contains('active')) { closeModal(); }
-                });
-
-                // Form Submission with WhatsApp Integration
                 designForm.addEventListener('submit', (e) => {
                     e.preventDefault();
-                    
                     const fullName = document.getElementById('fullName').value;
                     const email = document.getElementById('email').value;
                     const phone = document.getElementById('phone').value;
@@ -1114,60 +1201,24 @@
                     const projectDetails = document.getElementById('projectDetails').value;
                     const referenceLinks = document.getElementById('referenceLinks').value || 'None';
                     const source = document.querySelector('input[name="source"]:checked')?.value || 'Not specified';
-                    
-                    const errorMsg = document.getElementById('errorMessage');
-                    const successMsg = document.getElementById('successMessage');
-                    errorMsg.classList.remove('show'); 
-                    successMsg.classList.remove('show');
+                    const errorMsg = document.getElementById('errorMessage'); const successMsg = document.getElementById('successMessage');
+                    errorMsg.classList.remove('show'); successMsg.classList.remove('show');
 
-                    if (!fullName || !email || !phone || !serviceType || !budget || !projectDetails) {
-                        errorMsg.classList.add('show');
-                        setTimeout(() => errorMsg.classList.remove('show'), 4000);
-                        return;
-                    }
+                    if (!fullName || !email || !phone || !serviceType || !budget || !projectDetails) { errorMsg.classList.add('show'); setTimeout(() => errorMsg.classList.remove('show'), 4000); return; }
 
                     const whatsappNumber = '919372998318'; 
                     const message = `🎨 *New Design Inquiry - AUME Design*\n\n👤 *Client Information:*\nName: ${fullName}\nEmail: ${email}\nPhone: ${phone}\nBusiness: ${businessName}\n\n💼 *Project Details:*\nService Required: ${serviceType}\nBudget: ${budget}\nTimeline: ${timeline}\n\n📝 *Project Description:*\n${projectDetails}\n\n🔗 *References:*\n${referenceLinks}\n\n📢 *Source:* ${source}`;
-                    
-                    const encodedMessage = encodeURIComponent(message);
-                    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
-                    window.open(whatsappUrl, '_blank');
+                    window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`, '_blank');
 
-                    successMsg.classList.add('show');
-                    designForm.reset();
-                    // Reset borders after successful submission
-                     document.querySelectorAll('#designInquiryForm [required]').forEach(field => {
-                         field.style.borderColor = ''; 
-                         field.classList.remove('border-red-500'); 
-                     });
-
-                    setTimeout(() => {
-                        closeModal();
-                        setTimeout(() => successMsg.classList.remove('show'), 500); 
-                    }, 2000);
+                    successMsg.classList.add('show'); designForm.reset();
+                     document.querySelectorAll('#designInquiryForm [required]').forEach(field => { field.style.borderColor = ''; field.classList.remove('border-red-500'); });
+                    setTimeout(() => { closeModal(); setTimeout(() => successMsg.classList.remove('show'), 500); }, 2000);
                 });
 
-                // Real-time validation visual feedback
                 document.querySelectorAll('#designInquiryForm [required]').forEach(field => {
-                    field.addEventListener('blur', () => {
-                        if (!field.value) {
-                             field.style.borderColor = '#ef4444'; 
-                             field.classList.add('border-red-500'); 
-                        } else {
-                             field.style.borderColor = ''; 
-                             field.classList.remove('border-red-500'); 
-                        }
-                    });
-                     field.addEventListener('input', () => { 
-                          if (field.value) {
-                              field.style.borderColor = '';
-                              field.classList.remove('border-red-500');
-                          }
-                     });
+                    field.addEventListener('blur', () => { if (!field.value) { field.style.borderColor = '#ef4444'; field.classList.add('border-red-500'); } else { field.style.borderColor = ''; field.classList.remove('border-red-500'); } });
+                     field.addEventListener('input', () => { if (field.value) { field.style.borderColor = ''; field.classList.remove('border-red-500'); } });
                 });
-
-            } else {
-                 console.error("Contact modal elements not found");
             }
 
         }); // End DOMContentLoaded
