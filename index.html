@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en" class="dark"> <!-- Default to dark mode -->
 <head>
@@ -98,10 +99,88 @@
         }
         .dark .grid-background { --grid-color: rgba(255, 255, 255, 0.05); }
 
-        /* Horizontal Scroll */
-        .horizontal-scroll-section { height: 100vh; overflow: hidden; }
-        .projects-wrapper { will-change: transform; }
-        .project-card:hover img { transform: scale(1.05); }
+        /* --- RESPONSIVE PORTFOLIO STYLES --- */
+
+        /* Mobile First Defaults (Vertical Stack, No Cropping) */
+        #mobile-work { display: block; }
+        #desktop-work { display: none; }
+
+        .mobile-project-card {
+            position: relative;
+            width: 100%;
+            /* Removed fixed height to prevent cropping. 
+               Images will maintain their natural aspect ratio. */
+            margin-bottom: 30px;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .mobile-project-card img {
+            width: 100%;
+            height: auto; /* Allows natural height */
+            display: block;
+        }
+        .mobile-card-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            color: white;
+        }
+
+        /* Desktop Overrides (Horizontal Scroll) */
+        @media (min-width: 768px) {
+            #mobile-work { display: none; }
+            #desktop-work { display: block; }
+            
+            .horizontal-scroll-section { 
+                height: 100vh; 
+                overflow: hidden; 
+                visibility: hidden; /* Hidden initially to prevent FOUC before GSAP loads */
+            }
+            /* Make visible once GSAP is ready (handled in JS if needed, or just by default after load) */
+            .horizontal-scroll-section.loaded { visibility: visible; }
+            
+            .projects-wrapper { 
+                will-change: transform; 
+                height: 100%;
+                display: flex;
+                align-items: center;
+                padding-left: 8vw; /* Initial offset */
+            }
+            .project-card {
+                position: relative;
+                flex-shrink: 0;
+                width: 60vw;      /* Wider cards for desktop */
+                height: 70vh;     /* Consistent height */
+                margin-right: 4vw; /* Spacing between cards */
+                border-radius: 30px;
+                overflow: hidden;
+                transition: transform 0.3s ease-out;
+            }
+            .project-card:hover {
+                transform: scale(1.02); /* Slight hover effect */
+            }
+             .project-card img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+            .project-card-content {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                padding: 40px;
+                background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+                color: white;
+            }
+            .project-card-content h3 { font-size: 3rem; font-weight: 800; leading: 1; }
+            .project-card-content p { font-size: 1.25rem; opacity: 0.9; }
+        }
+
 
         /* Smooth color transitions */
         .preload * { transition: none !important; }
@@ -169,9 +248,29 @@
             perspective: 1000px;
         }
         .hero-headline {
-            transition: transform 0.5s ease-out;
+            /* transition: transform 0.5s ease-out; Remove this generic transition to prevent jumps */
             transform-style: preserve-3d;
+            will-change: transform;
         }
+        /* Fix for Hero Logo Jumps: Force overlap with grid */
+        .hero-logo-wrapper {
+            display: grid;
+            place-items: center;
+            width: 83.333333%; /* w-5/6 equivalent */
+            max-width: 72rem; /* max-w-6xl equivalent */
+        }
+        .hero-logo-wrapper img {
+            grid-area: 1 / 1; /* Force both images into the same grid cell */
+            width: 100%;
+            height: auto;
+            transition: opacity 0.5s ease; /* Smooth fade instead of jumpy display:none */
+        }
+        /* Hide by default with opacity, handled by dark mode classes below */
+        html.dark .hero-logo-light { opacity: 0; pointer-events: none; }
+        html.dark .hero-logo-dark { opacity: 1; }
+        html:not(.dark) .hero-logo-light { opacity: 1; }
+        html:not(.dark) .hero-logo-dark { opacity: 0; pointer-events: none; }
+
 
         /* Animated Toggle Styles */
         .switch { position: relative; display: inline-block; width: 60px; height: 34px; }
@@ -365,33 +464,39 @@
 
     <div id="custom-cursor" class="hidden lg:block fixed w-3 h-3 bg-brand-accent rounded-full pointer-events-none z-50"></div>
 
+    <!-- MOVED: Theme Toggle is now fixed at the bottom right -->
+    <div class="fixed bottom-6 right-6 z-50 scale-90 md:scale-100 origin-bottom-right">
+        <label class="switch">
+            <input id="input" type="checkbox" />
+            <div class="slider round">
+                <div class="sun-moon">
+                    <svg id="moon-dot-1" class="moon-dot" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50"></circle></svg>
+                    <svg id="moon-dot-2" class="moon-dot" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50"></circle></svg>
+                    <svg id="moon-dot-3" class="moon-dot" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50"></circle></svg>
+                    <svg id="cloud-1" class="cloud-dark" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50"></circle></svg>
+                    <svg id="cloud-2" class="cloud-dark" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50"></circle></svg>
+                    <svg id="cloud-3" class="cloud-dark" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50"></circle></svg>
+                    <svg id="cloud-4" class="cloud-light" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50"></circle></svg>
+                    <svg id="cloud-5" class="cloud-light" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50"></circle></svg>
+                    <svg id="cloud-6" class="cloud-light" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50"></circle></svg>
+                </div>
+                <div class="stars">
+                    <svg id="star-1" class="star" viewBox="0 0 20 20"><path d="M 0 10 C 10 10,10 10 ,0 10 C 10 10 , 10 10 , 10 20 C 10 10 , 10 10 , 20 10 C 10 10 , 10 10 , 10 0 C 10 10,10 10 ,0 10 Z"></path></svg>
+                    <svg id="star-2" class="star" viewBox="0 0 20 20"><path d="M 0 10 C 10 10,10 10 ,0 10 C 10 10 , 10 10 , 10 20 C 10 10 , 10 10 , 20 10 C 10 10 , 10 10 , 10 0 C 10 10,10 10 ,0 10 Z"></path></svg>
+                    <svg id="star-3" class="star" viewBox="0 0 20 20"><path d="M 0 10 C 10 10,10 10 ,0 10 C 10 10 , 10 10 , 10 20 C 10 10 , 10 10 , 20 10 C 10 10 , 10 10 , 10 0 C 10 10,10 10 ,0 10 Z"></path></svg>
+                    <svg id="star-4" class="star" viewBox="0 0 20 20"><path d="M 0 10 C 10 10,10 10 ,0 10 C 10 10 , 10 10 , 10 20 C 10 10 , 10 10 , 20 10 C 10 10 , 10 10 , 10 0 C 10 10,10 10 ,0 10 Z"></path></svg>
+                </div>
+            </div>
+        </label>
+    </div>
+
     <header class="fixed top-0 left-0 right-0 z-40 p-6 md:p-8 flex justify-end items-center">
         <div class="flex items-center gap-4">
-            <label class="switch">
-                <input id="input" type="checkbox" />
-                <div class="slider round">
-                    <div class="sun-moon">
-                        <svg id="moon-dot-1" class="moon-dot" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50"></circle></svg>
-                        <svg id="moon-dot-2" class="moon-dot" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50"></circle></svg>
-                        <svg id="moon-dot-3" class="moon-dot" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50"></circle></svg>
-                        <svg id="cloud-1" class="cloud-dark" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50"></circle></svg>
-                        <svg id="cloud-2" class="cloud-dark" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50"></circle></svg>
-                        <svg id="cloud-3" class="cloud-dark" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50"></circle></svg>
-                        <svg id="cloud-4" class="cloud-light" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50"></circle></svg>
-                        <svg id="cloud-5" class="cloud-light" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50"></circle></svg>
-                        <svg id="cloud-6" class="cloud-light" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50"></circle></svg>
-                    </div>
-                    <div class="stars">
-                        <svg id="star-1" class="star" viewBox="0 0 20 20"><path d="M 0 10 C 10 10,10 10 ,0 10 C 10 10 , 10 10 , 10 20 C 10 10 , 10 10 , 20 10 C 10 10 , 10 10 , 10 0 C 10 10,10 10 ,0 10 Z"></path></svg>
-                        <svg id="star-2" class="star" viewBox="0 0 20 20"><path d="M 0 10 C 10 10,10 10 ,0 10 C 10 10 , 10 10 , 10 20 C 10 10 , 10 10 , 20 10 C 10 10 , 10 10 , 10 0 C 10 10,10 10 ,0 10 Z"></path></svg>
-                        <svg id="star-3" class="star" viewBox="0 0 20 20"><path d="M 0 10 C 10 10,10 10 ,0 10 C 10 10 , 10 10 , 10 20 C 10 10 , 10 10 , 20 10 C 10 10 , 10 10 , 10 0 C 10 10,10 10 ,0 10 Z"></path></svg>
-                        <svg id="star-4" class="star" viewBox="0 0 20 20"><path d="M 0 10 C 10 10,10 10 ,0 10 C 10 10 , 10 10 , 10 20 C 10 10 , 10 10 , 20 10 C 10 10 , 10 10 , 10 0 C 10 10,10 10 ,0 10 Z"></path></svg>
-                    </div>
-                </div>
-            </label>
+            <!-- Theme Toggle Removed from here -->
              <!-- Updated Button with ID -->
             <button class="connect-button type1 hidden md:block" id="openContactModal"><span class="btn-txt">Let's Connect</span></button>
-            <button id="menu-button" class="z-50 p-2" aria-label="Open menu">
+            <!-- Increased padding (p-4) for better touch target to prevent glitches -->
+            <button id="menu-button" class="z-50 p-4 -mr-2" aria-label="Open menu">
                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
             </button>
         </div>
@@ -421,8 +526,11 @@
     <main id="main-content">
         <section class="h-screen min-h-[700px] flex flex-col justify-center items-center text-center p-6 md:p-8 relative grid-background hero-image-container">
             <div class="absolute inset-0 flex items-center justify-center flex-col">
-                <img src="https://i.ibb.co/JRCQyPdG/Untitled-2-01.png" alt="Aumedesign Brand Logo" class="w-5/6 max-w-6xl hero-headline hidden dark:block">
-                <img src="https://i.ibb.co/G4FSVD5T/Untitled-2-03.png" alt="Aumedesign Brand Logo" class="w-5/6 max-w-6xl hero-headline block dark:hidden">
+                <!-- FIXED: Hero Logos now overlap perfectly using CSS Grid -->
+                <div class="hero-logo-wrapper hero-headline">
+                    <img src="https://i.ibb.co/JRCQyPdG/Untitled-2-01.png" alt="Aumedesign Brand Logo" class="hero-logo-dark">
+                    <img src="https://i.ibb.co/G4FSVD5T/Untitled-2-03.png" alt="Aumedesign Brand Logo" class="hero-logo-light">
+                </div>
                 <p class="text-xl md:text-3xl font-light tracking-wider -mt-8 md:-mt-16 lg:-mt-24 hero-subline text-gray-600 dark:text-gray-300">We're a creative powerhouse building brands that matter.</p>
             </div>
             <div class="absolute bottom-8 text-center text-gray-500 dark:text-gray-400 text-sm hero-scroll"><p>↓ Scroll to explore</p></div>
@@ -459,23 +567,71 @@
             </div>
         </section>
 
-        <section id="work" class="horizontal-scroll-section bg-white dark:bg-brand-black">
-            <div class="projects-wrapper flex h-screen items-center gap-8">
-                 <div class="project-card flex-shrink-0 w-screen h-screen relative flex items-end p-8 md:p-16">
-                    <img src="https://i.ibb.co/200vLrGK/acd8a5233876973-68b82584d38f6.webp" alt="Roja-luxury perfume Project" class="absolute inset-0 w-full h-full object-cover -z-10 transition-transform duration-500 ease-in-out">
-                    <div class="text-white"><h3 class="text-3xl md:text-5xl font-bold">Roja-luxury perfume</h3><p class="text-lg md:text-xl mt-2 text-gray-300">Brand Identity • 2025</p></div>
+        <!-- DESKTOP PORTFOLIO (Horizontal Scroll - RESTORED) -->
+        <section id="desktop-work" class="horizontal-scroll-section bg-white dark:bg-brand-black">
+            <div class="projects-wrapper">
+                 <div class="project-card">
+                    <img src="https://i.ibb.co/200vLrGK/acd8a5233876973-68b82584d38f6.webp" alt="Roja-luxury perfume Project">
+                    <div class="project-card-content">
+                        <h3>Roja - Luxury Perfume</h3>
+                        <p>Brand Identity • 2025</p>
+                    </div>
                 </div>
-                <div class="project-card flex-shrink-0 w-screen h-screen relative flex items-end p-8 md:p-16">
-                    <img src="https://i.ibb.co/RkpkQQ8h/b04596230224489-6873355ea45b5.webp" alt="SHOR / CLOTHING BRAND Project" class="absolute inset-0 w-full h-full object-cover -z-10 transition-transform duration-500 ease-in-out">
-                    <div class="text-white"><h3 class="text-3xl md:text-5xl font-bold">SHOR / CLOTHING BRAND</h3><p class="text-lg md:text-xl mt-2 text-gray-300">Packaging Design • 2025</p></div>
+                <div class="project-card">
+                    <img src="https://i.ibb.co/RkpkQQ8h/b04596230224489-6873355ea45b5.webp" alt="SHOR / CLOTHING BRAND Project">
+                    <div class="project-card-content">
+                        <h3>SHOR / CLOTHING BRAND</h3>
+                        <p>Packaging Design • 2025</p>
+                    </div>
                 </div>
-                <div class="project-card flex-shrink-0 w-screen h-screen relative flex items-end p-8 md:p-16">
-                     <img src="https://i.ibb.co/NdLTrhwm/68c05a230186811-687240b3ae895.webp" alt="Chokha Brand Identity Project" class="absolute inset-0 w-full h-full object-cover -z-10 transition-transform duration-500 ease-in-out">
-                     <div class="text-white"><h3 class="text-3xl md:text-5xl font-bold">Chokha Brand Identity</h3><p class="text-lg md:text-xl mt-2 text-gray-300">Complete Branding • 2025</p></div>
+                <div class="project-card">
+                     <img src="https://i.ibb.co/NdLTrhwm/68c05a230186811-687240b3ae895.webp" alt="Chokha Brand Identity Project">
+                     <div class="project-card-content">
+                        <h3>Chokha Brand Identity</h3>
+                        <p>Complete Branding • 2025</p>
+                     </div>
                 </div>
-                <div class="project-card flex-shrink-0 w-screen h-screen relative flex items-end p-8 md:p-16">
-                     <img src="https://i.ibb.co/DPBqwV6D/a98078233165195-68aa9aff9ea2e.webp" alt="GREEEN Project" class="absolute inset-0 w-full h-full object-cover -z-10 transition-transform duration-500 ease-in-out">
-                     <div class="text-white"><h3 class="text-3xl md:text-5xl font-bold">GREEEN</h3><p class="text-lg md:text-xl mt-2 text-gray-300">Website + Brand • 2025</p></div>
+                <div class="project-card">
+                     <img src="https://i.ibb.co/DPBqwV6D/a98078233165195-68aa9aff9ea2e.webp" alt="GREEEN Project">
+                     <div class="project-card-content">
+                        <h3>GREEEN</h3>
+                        <p>Website + Brand • 2025</p>
+                     </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MOBILE PORTFOLIO (Vertical Stack, No Cropping - FIXED) -->
+        <section id="mobile-work" class="py-20 px-6 bg-white dark:bg-brand-black">
+            <div class="max-w-md mx-auto">
+                 <h2 class="anim-text text-4xl font-bold mb-12">Our Work</h2>
+                 <div class="mobile-project-card">
+                    <img src="https://i.ibb.co/200vLrGK/acd8a5233876973-68b82584d38f6.webp" alt="Roja-luxury perfume Project">
+                    <div class="mobile-card-content">
+                        <h3 class="text-2xl font-bold">Roja-luxury perfume</h3>
+                        <p class="text-base mt-2 opacity-90">Brand Identity • 2025</p>
+                    </div>
+                </div>
+                <div class="mobile-project-card">
+                    <img src="https://i.ibb.co/RkpkQQ8h/b04596230224489-6873355ea45b5.webp" alt="SHOR / CLOTHING BRAND Project">
+                    <div class="mobile-card-content">
+                        <h3 class="text-2xl font-bold">SHOR / CLOTHING BRAND</h3>
+                        <p class="text-base mt-2 opacity-90">Packaging Design • 2025</p>
+                    </div>
+                </div>
+                <div class="mobile-project-card">
+                     <img src="https://i.ibb.co/NdLTrhwm/68c05a230186811-687240b3ae895.webp" alt="Chokha Brand Identity Project">
+                     <div class="mobile-card-content">
+                        <h3 class="text-2xl font-bold">Chokha Brand Identity</h3>
+                        <p class="text-base mt-2 opacity-90">Complete Branding • 2025</p>
+                    </div>
+                </div>
+                <div class="mobile-project-card">
+                     <img src="https://i.ibb.co/DPBqwV6D/a98078233165195-68aa9aff9ea2e.webp" alt="GREEEN Project">
+                     <div class="mobile-card-content">
+                        <h3 class="text-2xl font-bold">GREEEN</h3>
+                        <p class="text-base mt-2 opacity-90">Website + Brand • 2025</p>
+                    </div>
                 </div>
             </div>
         </section>
@@ -645,18 +801,36 @@
             const menuButton = document.getElementById('menu-button');
             const menuPanel = document.getElementById('menu-panel');
             const menuOverlay = document.getElementById('menu-overlay');
+            
+            // Animation Guard to prevent glitches on rapid clicks
+            let isMenuAnimating = false;
+
             const toggleMenu = () => {
-                if (!menuPanel || !menuOverlay) { console.error("Menu elements not found"); return; }
+                if (!menuPanel || !menuOverlay || isMenuAnimating) return; 
+                
+                isMenuAnimating = true; // Lock animation
                 const isOpen = menuPanel.classList.contains('translate-x-0');
+                
                 if (!isOpen) {
                     menuPanel.classList.remove('translate-x-full'); menuPanel.classList.add('translate-x-0');
                     menuOverlay.classList.remove('hidden');
-                    gsap.to(menuOverlay, { opacity: 1, duration: 0.5 });
+                    gsap.to(menuOverlay, { 
+                        opacity: 1, 
+                        duration: 0.5 
+                    });
                     if (typeof lenis !== 'undefined') lenis.stop(); 
-                    gsap.fromTo('.menu-item', { y: '100%', opacity: 0 }, { y: '0%', opacity: 1, duration: 0.6, stagger: 0.05, ease: 'power3.out', delay: 0.3 });
+                    gsap.fromTo('.menu-item', 
+                        { y: '100%', opacity: 0 }, 
+                        { y: '0%', opacity: 1, duration: 0.6, stagger: 0.05, ease: 'power3.out', delay: 0.3, 
+                          onComplete: () => isMenuAnimating = false // Unlock when done
+                        }
+                    );
                 } else {
                     gsap.to(menuPanel, { x: '100%', duration: 0.7, ease: 'power3.inOut', onComplete: () => {
                         menuPanel.classList.add('translate-x-full'); menuPanel.classList.remove('translate-x-0');
+                         // Reset transform after GSAP to ensure class-based toggling works next time
+                        gsap.set(menuPanel, { clearProps: "x" });
+                        isMenuAnimating = false; // Unlock when done
                     }});
                     gsap.to(menuOverlay, { opacity: 0, duration: 0.5, onComplete: () => menuOverlay.classList.add('hidden') });
                     if (typeof lenis !== 'undefined') lenis.start(); 
@@ -669,18 +843,22 @@
                 menuPanel.querySelectorAll('a').forEach(link => {
                     link.addEventListener('click', (e) => {
                         const href = link.getAttribute('href');
-                        if (href && href.startsWith('#')) { 
-                            e.preventDefault(); 
-                            const targetElement = document.querySelector(href);
-                            if (targetElement) {
-                                if (menuPanel.classList.contains('translate-x-0')) {
-                                    toggleMenu(); 
-                                    setTimeout(() => { if (typeof lenis !== 'undefined') lenis.scrollTo(targetElement); }, 500); 
-                                } else {
+                        // If it is a hash link
+                        if (href && href.startsWith('#')) {
+                            e.preventDefault();
+                            // If it's an actual ID (length > 1), try to scroll to it
+                            if (href.length > 1) {
+                                const targetElement = document.querySelector(href);
+                                if (targetElement) {
                                     if (typeof lenis !== 'undefined') lenis.scrollTo(targetElement);
+                                } else {
+                                     console.warn(`Anchor target ${href} not found`);
                                 }
-                            } else { console.warn(`Anchor target ${href} not found`); }
+                            }
+                            // Always close menu if it's open when a hash link is clicked
+                            if (menuPanel.classList.contains('translate-x-0')) { toggleMenu(); }
                         } else {
+                             // Regular link, just close menu
                              if (menuPanel.classList.contains('translate-x-0')) { toggleMenu(); }
                         }
                     });
@@ -767,12 +945,17 @@
                 });
             });
 
+            // UPDATED: Text splitting that keeps words together
             document.querySelectorAll('.anim-text').forEach(textBlock => {
                 let letters;
                 if(!textBlock.dataset.split) {
-                    textBlock.innerHTML = textBlock.innerText.split(/(\s+)/).filter(Boolean).map(word => { 
-                         if (word.trim() === '') return `<span class="whitespace">${word}</span>`;
-                         return word.split('').map(char => `<span class="letter inline-block">${char}</span>`).join('');
+                    textBlock.innerHTML = textBlock.innerText.split(/(\s+)/).filter(Boolean).map(part => { 
+                         // If it's whitespace, keep it as is for natural spacing
+                         if (/^\s+$/.test(part)) return part;
+                         // Wrap WHOLE word in a no-wrap span, then split into letters
+                         return `<span class="inline-block whitespace-nowrap">` + 
+                                part.split('').map(char => `<span class="letter inline-block">${char}</span>`).join('') + 
+                                `</span>`;
                      }).join('');
                     textBlock.dataset.split = true;
                     letters = textBlock.querySelectorAll('.letter'); 
@@ -838,30 +1021,52 @@
                 scrollTrigger: { trigger: "#faq", start: "top 80%", toggleActions: 'play none none none' }
             });
 
-            // Ensure hero-logo-bg is handled correctly (removed if not present)
-            // const heroLogoBg = document.querySelector('.hero-logo-bg');
-            // if (heroLogoBg) { ... } // Removed parallax for this element
-
-            const projectsContainer = document.querySelector('.horizontal-scroll-section');
-            const projectsWrapper = document.querySelector('.projects-wrapper');
+            // Restore Horizontal Scroll for Desktop
+            const projectsContainer = document.getElementById('desktop-work');
+            const projectsWrapper = projectsContainer ? projectsContainer.querySelector('.projects-wrapper') : null;
+            
             if (projectsContainer && projectsWrapper) {
+                // Signal that CSS can make it visible now
+                projectsContainer.classList.add('loaded');
+                
                 ScrollTrigger.matchMedia({
                     "(min-width: 768px)": function() {
                         gsap.to(projectsWrapper, {
                             x: () => -(projectsWrapper.scrollWidth - projectsContainer.offsetWidth),
                             ease: 'none',
                             scrollTrigger: {
-                                trigger: projectsContainer, start: 'top top',
+                                trigger: projectsContainer, 
+                                start: 'top top',
                                 end: () => "+=" + (projectsWrapper.scrollWidth - projectsContainer.offsetWidth),
-                                scrub: 1, pin: true, anticipatePin: 1, invalidateOnRefresh: true
+                                scrub: 1, 
+                                pin: true, 
+                                anticipatePin: 1, 
+                                invalidateOnRefresh: true
                             }
                         });
                     }
                 });
-            } else {
-                 console.warn("Horizontal scroll elements not found");
             }
             
+            // Mobile Portfolio Animation (Simple Fade Up)
+            ScrollTrigger.matchMedia({
+                "(max-width: 767px)": function() {
+                    gsap.utils.toArray(".mobile-project-card").forEach(card => {
+                        gsap.from(card, {
+                            opacity: 0,
+                            y: 50,
+                            duration: 0.8,
+                            ease: "power2.out",
+                            scrollTrigger: {
+                                trigger: card,
+                                start: "top 85%",
+                                toggleActions: "play none none reverse"
+                            }
+                        });
+                    });
+                }
+            });
+
              // --- Contact Modal Logic ---
             const openModalBtn = document.getElementById('openContactModal');
             const closeModalBtn = document.getElementById('closeModal');
@@ -970,4 +1175,3 @@
     </script>
 </body>
 </html>
-
