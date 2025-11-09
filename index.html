@@ -74,52 +74,20 @@
             pointer-events: none;
         }
 
-        /* Honeycomb Animation */
-        @-webkit-keyframes honeycomb {
-            0%, 20%, 80%, 100% { opacity: 0; -webkit-transform: scale(0); transform: scale(0); }
-            30%, 70% { opacity: 1; -webkit-transform: scale(1); transform: scale(1); }
+        /* NEW: Logo Spin Animation */
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
         }
-        @keyframes honeycomb {
-            0%, 20%, 80%, 100% { opacity: 0; -webkit-transform: scale(0); transform: scale(0); }
-            30%, 70% { opacity: 1; -webkit-transform: scale(1); transform: scale(1); }
+        
+        .preloader-logo {
+            width: 180px; /* Increased size from 120px to 180px */
+            height: auto;
+            /* Smooth, constant spin at same pace */
+            animation: spin 1.5s linear infinite;
+            will-change: transform;
         }
-        .honeycomb {
-            height: 24px;
-            position: relative;
-            width: 24px;
-        }
-        .honeycomb div {
-            -webkit-animation: honeycomb 2.1s infinite backwards;
-            animation: honeycomb 2.1s infinite backwards;
-            background: #FF3503; /* CHANGED to brand accent color for better visibility */
-            height: 12px;
-            margin-top: 6px;
-            position: absolute;
-            width: 24px;
-        }
-        .honeycomb div:after, .honeycomb div:before {
-            content: '';
-            border-left: 12px solid transparent;
-            border-right: 12px solid transparent;
-            position: absolute;
-            left: 0;
-            right: 0;
-        }
-        .honeycomb div:after {
-            top: -6px;
-            border-bottom: 6px solid #FF3503; /* Brand accent */
-        }
-        .honeycomb div:before {
-            bottom: -6px;
-            border-top: 6px solid #FF3503; /* Brand accent */
-        }
-        .honeycomb div:nth-child(1) { -webkit-animation-delay: 0s; animation-delay: 0s; left: -28px; top: 0; }
-        .honeycomb div:nth-child(2) { -webkit-animation-delay: 0.1s; animation-delay: 0.1s; left: -14px; top: 22px; }
-        .honeycomb div:nth-child(3) { -webkit-animation-delay: 0.2s; animation-delay: 0.2s; left: 14px; top: 22px; }
-        .honeycomb div:nth-child(4) { -webkit-animation-delay: 0.3s; animation-delay: 0.3s; left: 28px; top: 0; }
-        .honeycomb div:nth-child(5) { -webkit-animation-delay: 0.4s; animation-delay: 0.4s; left: 14px; top: -22px; }
-        .honeycomb div:nth-child(6) { -webkit-animation-delay: 0.5s; animation-delay: 0.5s; left: -14px; top: -22px; }
-        .honeycomb div:nth-child(7) { -webkit-animation-delay: 0.6s; animation-delay: 0.6s; left: 0; top: 0; }
+
+        /* Removed .preloader-logo.fast-spin as it's no longer needed */
 
         /* Lenis smooth scroll styles */
         html.lenis {
@@ -611,17 +579,9 @@
 </head>
 <body class="bg-brand-white dark:bg-brand-black text-brand-black dark:text-brand-white font-sans antialiased overflow-x-hidden">
 
-    <!-- PRELOADER -->
+    <!-- PRELOADER (UPDATED) -->
     <div id="preloader">
-        <div class="honeycomb">
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
-        </div>
+        <img src="https://i.ibb.co/rfcCSsww/final-logo-02.png" alt="Loading..." class="preloader-logo">
     </div>
 
     <!-- Custom Magnetic Cursor Element -->
@@ -852,10 +812,11 @@
             <div><h3 class="text-2xl font-medium text-black dark:text-white mb-4">Aumedesign</h3><p>Design Beyond Boundaries</p></div>
             <div><h4 class="font-bold text-black dark:text-white mb-4">Services</h4><ul class="space-y-2"><li><a href="#services" class="hover:text-black dark:hover:text-white transition magnetic-target inline-block">Logo Design</a></li><li><a href="#services" class="hover:text-black dark:hover:text-white transition magnetic-target inline-block">Brand Identity</a></li><li><a href="#services" class="hover:text-black dark:hover:text-white transition magnetic-target inline-block">Packaging Design</a></li><li><a href="#services" class="hover:text-black dark:hover:text-white transition magnetic-target inline-block">Website Development</a></li></ul></div>
             <div><h4 class="font-bold text-black dark:text-white mb-4">Company</h4><ul class="space-y-2"><li><a href="#story" class="hover:text-black dark:hover:text-white transition magnetic-target inline-block">Our Story</a></li><li><a href="#work" class="hover:text-black dark:hover:text-white transition magnetic-target inline-block">Our Work</a></li><li><a href="#services" class="hover:text-black dark:hover:text-white transition magnetic-target inline-block">What We Do</a></li><li><a href="#" class="hover:text-black dark:hover:text-white transition magnetic-target inline-block">Insights</a></li><li><a href="#contact" class="hover:text-black dark:hover:text-white transition magnetic-target inline-block">Get in Touch</a></li></ul></div>
-            <div><h4 class="font-bold text-black dark:text-white mb-4">Connect</h4><ul class="space-y-2"><li><a href="mailto:hello@aumedesign.com" class="hover:text-black dark:hover:text-white transition magnetic-target inline-block">hello@aumedesign.com</a></li><li><a href="tel:+919372998318" class="hover:text-black dark:hover:text-white transition magnetic-target inline-block">+91 9372998318</a></li><li><a href="#" class="hover:text-black dark:hover:text-white transition flex items-center group magnetic-target inline-flex">Instagram <svg class="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg></a></li><li><a href="#" class="hover:text-black dark:hover:text-white transition flex items-center group magnetic-target inline-flex">LinkedIn <svg class="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg></a></li></ul></div>
+            <div><h4 class="font-bold text-black dark:text-white mb-4">Connect</h4><ul class="space-y-2"><li><a href="mailto:infoaume.in@gmail.com" class="hover:text-black dark:hover:text-white transition magnetic-target inline-block">infoaume.in@gmail.com</a></li><li><a href="tel:+919372998318" class="hover:text-black dark:hover:text-white transition magnetic-target inline-block">+91 9372998318</a></li><li><a href="#" class="hover:text-black dark:hover:text-white transition flex items-center group magnetic-target inline-flex">Instagram <svg class="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg></a></li><li><a href="#" class="hover:text-black dark:hover:text-white transition flex items-center group magnetic-target inline-flex">LinkedIn <svg class="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg></a></li></ul></div>
         </div>
         <div class="max-w-7xl mx-auto border-t border-gray-200 dark:border-white/10 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-gray-600 dark:text-gray-500">
-            <p>&copy; 2025 Aumedesign. All rights reserved.</p>
+            <!-- UPDATED COPYRIGHT with Mini Logo -->
+            <p class="flex items-center">&copy; 2023 <img src="https://i.ibb.co/rfcCSsww/final-logo-02.png" alt="Aumeverse Logo" class="h-5 w-auto mx-2 inline-block" style="filter: invert(1) grayscale(1);"> Aumeverse. All rights reserved.</p>
             <p class="mt-4 md:mt-0">Based in India • Working Worldwide</p>
         </div>
     </footer>
@@ -930,8 +891,8 @@
                 });
            }
 
-            // --- Remove Preloader Class ---
-            // Increased timeout to 3000ms (3 seconds) as requested
+            // --- PRELOADER SEQUENCER (SIMPLIFIED) ---
+            // Remove Preloader after 3 seconds total
              setTimeout(() => {
                  document.body.classList.add('loaded');
                  // Start entrance animations only after preloader begins fading out
@@ -1069,14 +1030,30 @@
                 menuPanel.querySelectorAll('a').forEach(link => {
                     link.addEventListener('click', (e) => {
                         const href = link.getAttribute('href');
-                        if (href && href.startsWith('#')) {
+                        // Handle internal anchor links that are actual targets (longer than just "#")
+                        if (href && href.startsWith('#') && href.length > 1) {
                             e.preventDefault();
-                            if (href.length > 1) {
-                                const targetElement = document.querySelector(href);
-                                if (targetElement && typeof lenis !== 'undefined') lenis.scrollTo(targetElement);
+                            const targetElement = document.querySelector(href);
+                            
+                            if (targetElement) {
+                                // 1. Close the menu immediately for responsiveness
+                                if (menuPanel.classList.contains('translate-x-0')) { 
+                                    toggleMenu(); 
+                                }
+
+                                // 2. Scroll to target after a short delay to allow menu to start closing
+                                setTimeout(() => {
+                                    if (typeof lenis !== 'undefined') {
+                                        // Preferred: Use Lenis smooth scroll
+                                        lenis.scrollTo(targetElement);
+                                    } else {
+                                        // Fallback: Use native smooth scroll if Lenis isn't ready
+                                        targetElement.scrollIntoView({ behavior: 'smooth' });
+                                    }
+                                }, 300);
                             }
-                            if (menuPanel.classList.contains('translate-x-0')) { toggleMenu(); }
                         } else {
+                             // For external links or just "#", just close the menu and let default happen
                              if (menuPanel.classList.contains('translate-x-0')) { toggleMenu(); }
                         }
                     });
